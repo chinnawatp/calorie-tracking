@@ -18,12 +18,31 @@ export class FoodEntryGroupService {
 
   async paginate(
     user: User,
-    options: IPaginationOptions,
+    {
+      startDate,
+      endDate,
+      options,
+    }: {
+      startDate?: string;
+      endDate?: string;
+      options: IPaginationOptions;
+    },
   ): Promise<Pagination<FoodEntryGroup>> {
     const queryBuilder = this.repository.createQueryBuilder('foodEntryGroup');
     queryBuilder.andWhere('foodEntryGroup.userId = :userId', {
       userId: user.id,
     });
+
+    if (startDate && endDate) {
+      queryBuilder.andWhere(
+        'foodEntryGroup.date >= :startDate AND foodEntryGroup.date <= :endDate',
+        {
+          startDate,
+          endDate,
+        },
+      );
+    }
+
     queryBuilder.innerJoinAndSelect(
       'foodEntryGroup.foodEntries',
       'foodEntries',

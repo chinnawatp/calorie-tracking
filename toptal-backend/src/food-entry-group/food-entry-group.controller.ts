@@ -28,14 +28,20 @@ export class FoodEntryGroupController {
       ParseIntPipe,
     )
     limit = DEFAULT_PAGINATION.LIMIT,
+    @Query('startDate') startDate,
+    @Query('endDate') endDate,
   ): Promise<Pagination<FoodEntryGroup>> {
     limit =
       limit > DEFAULT_PAGINATION.MAX_LIMIT
         ? DEFAULT_PAGINATION.MAX_LIMIT
         : limit;
     return this.foodEntryGroupService.paginate(req.user, {
-      page,
-      limit,
+      startDate,
+      endDate,
+      options: {
+        page,
+        limit,
+      },
     });
   }
 }

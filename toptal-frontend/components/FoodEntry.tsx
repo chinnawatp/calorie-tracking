@@ -16,12 +16,12 @@ type Props = {
 export default function FoodEntryItem({ foodEntry, onDelete }: Props) {
   return (
     <CardContent style={{ position: "relative" }}>
-      <Typography align="left" variant="h5" color="primary">
+      <Typography align="left" variant="h6" color="primary">
         {foodEntry.menuName}
       </Typography>
       <CalorieTypography
         align="right"
-        variant="h4"
+        variant="h6"
         color="secondary"
         gutterBottom
       >
@@ -31,7 +31,7 @@ export default function FoodEntryItem({ foodEntry, onDelete }: Props) {
         {`$${foodEntry.price}`}
       </Typography>
       <Typography align="left" color="text.secondary" gutterBottom>
-        {foodEntry.takenAt}
+        {new Date(foodEntry.takenAt).toLocaleString()}
       </Typography>
       <CardActions disableSpacing>
         <Button onClick={onDelete} color="error" startIcon={<DeleteIcon />}>

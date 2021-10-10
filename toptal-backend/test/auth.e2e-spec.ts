@@ -47,6 +47,10 @@ describe('Auth', () => {
       .expect(200);
   });
 
+  it(`/auth/profile`, async () => {
+    await request(app.getHttpServer()).get('/auth/profile').expect(200);
+  });
+
   afterAll(async () => {
     await app.close();
   });

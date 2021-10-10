@@ -1,3 +1,10 @@
+export interface User {
+  firstName: string;
+  lastName: string;
+  calorieLimitPerDay: number;
+  priceLimitPerDay: number;
+}
+
 export interface FoodEntry {
   id: number;
   menuName: string;

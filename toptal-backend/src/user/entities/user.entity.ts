@@ -25,6 +25,12 @@ export class User {
   @Column()
   lastName: string;
 
+  @Column({ default: 0 })
+  calorieLimitPerDay: number;
+
+  @Column({ default: 0 })
+  priceLimitPerDay: number;
+
   @OneToMany(() => FoodEntry, (entity) => entity.user)
   foodEntries: FoodEntry[];
 
