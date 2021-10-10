@@ -20,6 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand --testTimeout=10000",
     "db:start": "docker-compose up -d db",
+    "db:seed": "export ACTION=SEED && rm -rf dist && nest start",
     "migration:create": "npm run build && typeorm migration:generate",
     "migration:run": "npm run build && typeorm migration:run"
   },
