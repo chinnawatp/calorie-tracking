@@ -23,7 +23,7 @@ export class UserService {
   }
 
   findOneOrFail(id: number) {
-    return this.userRepository.findOneOrFail(id);
+    return this.userRepository.findOneOrFail(id, { relations: ['roles'] });
   }
 
   findOneByEmail(email: string) {

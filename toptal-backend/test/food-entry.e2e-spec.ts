@@ -33,13 +33,6 @@ describe('Auth', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         AppModule,
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: ':memory:',
-          entities: [User, FoodEntry, FoodEntryGroup],
-          logging: false,
-          synchronize: true,
-        }),
       ],
     }).compile();
 
@@ -47,6 +40,8 @@ describe('Auth', () => {
     await app.init();
 
     const connection = app.get(Connection);
+    await connection.synchronize(true);
+    
     user.password = await bcrypt.hash(USER_PWD, 10);
     await connection.getRepository(User).save(user);
 

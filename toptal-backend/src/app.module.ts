@@ -7,6 +7,7 @@ import { FoodEntryModule } from './food-entry/food-entry.module';
 import { UserModule } from './user/user.module';
 import { FoodEntryGroupModule } from './food-entry-group/food-entry-group.module';
 import { AuthModule } from './auth/auth.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     FoodEntryGroupModule,
     AuthModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

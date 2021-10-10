@@ -1,35 +1,26 @@
-import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
-import { Connection } from 'typeorm';
-import { User } from '../src/user/entities/user.entity';
+import { Test } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { FoodEntry } from '../src/food-entry/entities/food-entry.entity';
-import { FoodEntryGroup } from '../src/food-entry-group/entities/food-entry-group.entity';
+import * as request from 'supertest';
+import { Connection } from 'typeorm';
+import { AppModule } from '../src/app.module';
+import { AuthService } from '../src/auth/auth.service';
+import { User } from '../src/user/entities/user.entity';
 
 describe('Auth', () => {
   let app: INestApplication;
+  let accessToken;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: ':memory:',
-          entities: [User, FoodEntry, FoodEntryGroup],
-          logging: false,
-          synchronize: true,
-        }),
-      ],
+      imports: [AppModule],
     }).compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
 
     const connection = app.get(Connection);
+    await connection.synchronize(true);
 
     const user = new User();
     user.firstName = 'test';
@@ -48,7 +39,16 @@ describe('Auth', () => {
   });
 
   it(`/auth/profile`, async () => {
-    await request(app.getHttpServer()).get('/auth/profile').expect(200);
+    const authService = app.get(AuthService);
+    const res = await authService.login({
+      email: 'test@test.com',
+      password: 'test1234',
+    });
+
+    await request(app.getHttpServer())
+      .get('/auth/profile')
+      .set('Authorization', `Bearer ${res.accessToken}`)
+      .expect(200);
   });
 
   afterAll(async () => {

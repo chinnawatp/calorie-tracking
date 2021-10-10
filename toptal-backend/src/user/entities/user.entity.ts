@@ -4,9 +4,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Role } from './role.entity';
 
 @Entity()
 export class User {
@@ -36,6 +39,10 @@ export class User {
 
   @OneToMany(() => FoodEntryGroup, (entity) => entity.user)
   foodEntryGroups: FoodEntryGroup[];
+
+  @ManyToMany(() => Role, (entity) => entity.users)
+  @JoinTable()
+  roles: Role[];
 
   @CreateDateColumn()
   createdAt: Date;

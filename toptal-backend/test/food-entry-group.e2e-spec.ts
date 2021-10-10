@@ -38,6 +38,8 @@ describe('Food Entry Group', () => {
     await app.init();
 
     const connection = app.get(Connection);
+    await connection.synchronize(true);
+    
     user.password = await bcrypt.hash(USER_PWD, 10);
     await connection.getRepository(User).save(user);
 
