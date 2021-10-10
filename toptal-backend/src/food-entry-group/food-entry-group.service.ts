@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFoodEntryGroupDto } from './dto/create-food-entry-group.dto';
-import { UpdateFoodEntryGroupDto } from './dto/update-food-entry-group.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+import { Repository } from 'typeorm';
+import { User } from '../user/entities/user.entity';
+import { FoodEntryGroup } from './entities/food-entry-group.entity';
 
 @Injectable()
 export class FoodEntryGroupService {
-  create(createFoodEntryGroupDto: CreateFoodEntryGroupDto) {
-    return 'This action adds a new foodEntryGroup';
-  }
+  constructor(
+    @InjectRepository(FoodEntryGroup)
+    private readonly repository: Repository<FoodEntryGroup>,
+  ) {}
 
-  findAll() {
-    return `This action returns all foodEntryGroup`;
-  }
+  async paginate(
+    user: User,
+    options: IPaginationOptions,
+  ): Promise<Pagination<FoodEntryGroup>> {
+    const queryBuilder = this.repository.createQueryBuilder('foodEntryGroup');
+    queryBuilder.andWhere('foodEntryGroup.userId = :userId', {
+      userId: user.id,
+    });
+    queryBuilder.innerJoinAndSelect(
+      'foodEntryGroup.foodEntries',
+      'foodEntries',
+    );
 
-  findOne(id: number) {
-    return `This action returns a #${id} foodEntryGroup`;
-  }
-
-  update(id: number, updateFoodEntryGroupDto: UpdateFoodEntryGroupDto) {
-    return `This action updates a #${id} foodEntryGroup`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} foodEntryGroup`;
+    return paginate<FoodEntryGroup>(queryBuilder, options);
   }
 }

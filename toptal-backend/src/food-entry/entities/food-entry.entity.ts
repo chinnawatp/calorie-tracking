@@ -25,7 +25,7 @@ export class FoodEntry {
 
   @ManyToOne(
     () => FoodEntryGroup,
-    (foodEntryGroup) => foodEntryGroup.foodEntires,
+    (foodEntryGroup) => foodEntryGroup.foodEntries,
     { nullable: false },
   )
   foodEntryGroup: FoodEntryGroup;

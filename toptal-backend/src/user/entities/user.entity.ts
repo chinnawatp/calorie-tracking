@@ -26,7 +26,7 @@ export class User {
   lastName: string;
 
   @OneToMany(() => FoodEntry, (entity) => entity.user)
-  foodEntires: FoodEntry[];
+  foodEntries: FoodEntry[];
 
   @OneToMany(() => FoodEntryGroup, (entity) => entity.user)
   foodEntryGroups: FoodEntryGroup[];

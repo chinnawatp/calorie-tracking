@@ -18,15 +18,16 @@ export class AuthService {
   }
 
   async login(input: LoginInputDto) {
+    const ERROR_MESSAGE = 'Incorrect email or password';
     const user = await this.usersService.findOneByEmail(input.email);
 
     if (!user) {
-      throw new Error('Incorrect email or password');
+      throw new Error(ERROR_MESSAGE);
     }
 
     const match = await bcrypt.compare(input.password, user.password);
     if (!match) {
-      throw new Error('Incorrect email or password');
+      throw new Error(ERROR_MESSAGE);
     }
 
     const payload = { sub: user.id };

@@ -1,34 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  DefaultValuePipe,
+  Get,
+  ParseIntPipe,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { DEFAULT_PAGINATION } from '../utils/PaginationUtils';
+import { FoodEntryGroup } from './entities/food-entry-group.entity';
 import { FoodEntryGroupService } from './food-entry-group.service';
-import { CreateFoodEntryGroupDto } from './dto/create-food-entry-group.dto';
-import { UpdateFoodEntryGroupDto } from './dto/update-food-entry-group.dto';
 
-@Controller('food-entry-group')
+@Controller('food-entry-groups')
 export class FoodEntryGroupController {
   constructor(private readonly foodEntryGroupService: FoodEntryGroupService) {}
 
-  @Post()
-  create(@Body() createFoodEntryGroupDto: CreateFoodEntryGroupDto) {
-    return this.foodEntryGroupService.create(createFoodEntryGroupDto);
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.foodEntryGroupService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.foodEntryGroupService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFoodEntryGroupDto: UpdateFoodEntryGroupDto) {
-    return this.foodEntryGroupService.update(+id, updateFoodEntryGroupDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.foodEntryGroupService.remove(+id);
+  async findAll(
+    @Request() req,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query(
+      'limit',
+      new DefaultValuePipe(DEFAULT_PAGINATION.LIMIT),
+      ParseIntPipe,
+    )
+    limit = DEFAULT_PAGINATION.LIMIT,
+  ): Promise<Pagination<FoodEntryGroup>> {
+    limit =
+      limit > DEFAULT_PAGINATION.MAX_LIMIT
+        ? DEFAULT_PAGINATION.MAX_LIMIT
+        : limit;
+    return this.foodEntryGroupService.paginate(req.user, {
+      page,
+      limit,
+    });
   }
 }

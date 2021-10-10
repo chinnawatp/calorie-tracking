@@ -23,7 +23,7 @@ export class FoodEntryGroup {
   date: string;
 
   @OneToMany(() => FoodEntry, (foodEntry) => foodEntry.foodEntryGroup)
-  foodEntires: FoodEntry[];
+  foodEntries: FoodEntry[];
 
   @ManyToOne(() => User, (user) => user.foodEntryGroups)
   user: User;
