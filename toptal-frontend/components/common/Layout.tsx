@@ -23,7 +23,7 @@ const drawerWidth = 240;
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    height: '100vh',
+    minHeight: '100vh',
     background: '#EAEEF3',
     padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
@@ -94,7 +94,7 @@ const Layout: React.FC<Props> = ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Persistent drawer
+            Calorie App 
           </Typography>
         </Toolbar>
       </AppBar>
