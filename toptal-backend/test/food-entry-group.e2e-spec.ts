@@ -11,7 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthService } from '../src/auth/auth.service';
 import { FoodEntryService } from '../src/food-entry/food-entry.service';
 
-describe('Auth', () => {
+describe('Food Entry Group', () => {
   let app: INestApplication;
 
   let accessToken: string;
@@ -31,16 +31,7 @@ describe('Auth', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: ':memory:',
-          entities: [User, FoodEntry, FoodEntryGroup],
-          logging: false,
-          synchronize: true,
-        }),
-      ],
+      imports: [AppModule],
     }).compile();
 
     app = moduleRef.createNestApplication();
