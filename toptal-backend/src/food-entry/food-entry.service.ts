@@ -1,11 +1,48 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as dayjs from 'dayjs';
+import { User } from '../user/entities/user.entity';
+import { Repository } from 'typeorm';
 import { CreateFoodEntryDto } from './dto/create-food-entry.dto';
-import { UpdateFoodEntryDto } from './dto/update-food-entry.dto';
+import { FoodEntry } from './entities/food-entry.entity';
+import { FoodEntryGroup } from '../food-entry-group/entities/food-entry-group.entity';
+import { DATE_FORMAT } from '../utils/DateUtils';
 
 @Injectable()
 export class FoodEntryService {
-  create(createFoodEntryDto: CreateFoodEntryDto) {
-    return 'This action adds a new foodEntry';
+  constructor(
+    @InjectRepository(FoodEntry)
+    private readonly foodEntryRepository: Repository<FoodEntry>,
+    @InjectRepository(FoodEntryGroup)
+    private readonly foodEntryGroupRepository: Repository<FoodEntryGroup>,
+  ) {}
+
+  async create(user: User, createFoodEntryDto: CreateFoodEntryDto) {
+    const foodEntry = new FoodEntry();
+    foodEntry.menuName = createFoodEntryDto.menuName;
+    foodEntry.price = createFoodEntryDto.price;
+    foodEntry.calorie = createFoodEntryDto.calorie;
+    foodEntry.takenAt = new Date(createFoodEntryDto.takenAt);
+
+    let foodEntryGroup = await this.foodEntryGroupRepository.findOne({
+      where: {
+        date: dayjs(foodEntry.takenAt).format(DATE_FORMAT),
+      },
+    });
+
+    if (!foodEntryGroup) {
+      foodEntryGroup = new FoodEntryGroup();
+      foodEntryGroup.calorie = 0;
+      foodEntryGroup.price = 0;
+      foodEntryGroup.date = dayjs(foodEntry.takenAt).format(DATE_FORMAT);
+      foodEntryGroup.user = user;
+      await this.foodEntryGroupRepository.save(foodEntryGroup);
+    }
+
+    foodEntry.foodEntryGroup = foodEntryGroup;
+    const result = await this.foodEntryRepository.save(foodEntry);
+
+    return result;
   }
 
   findAll() {
@@ -16,11 +53,21 @@ export class FoodEntryService {
     return `This action returns a #${id} foodEntry`;
   }
 
-  update(id: number, updateFoodEntryDto: UpdateFoodEntryDto) {
-    return `This action updates a #${id} foodEntry`;
+  async update(id: number, updateFoodEntryDto: CreateFoodEntryDto) {
+    const foodEntry = await this.foodEntryRepository.findOneOrFail(id);
+
+    foodEntry.menuName = updateFoodEntryDto.menuName;
+    foodEntry.price = updateFoodEntryDto.price;
+    foodEntry.calorie = updateFoodEntryDto.calorie;
+    foodEntry.takenAt = new Date(updateFoodEntryDto.takenAt);
+
+    // TODO: recalculate total
+
+    return foodEntry;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} foodEntry`;
+  async remove(id: number) {
+    const foodEntry = await this.foodEntryRepository.findOneOrFail(id);
+    return this.foodEntryRepository.remove(foodEntry);
   }
 }

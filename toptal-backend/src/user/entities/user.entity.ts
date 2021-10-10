@@ -1,5 +1,5 @@
-import { FoodEntryGroup } from 'src/food-entry-group/entities/food-entry-group.entity';
-import { FoodEntry } from 'src/food-entry/entities/food-entry.entity';
+import { FoodEntryGroup } from '../..//food-entry-group/entities/food-entry-group.entity';
+import { FoodEntry } from '../..//food-entry/entities/food-entry.entity';
 import {
   Column,
   CreateDateColumn,
@@ -22,14 +22,14 @@ export class User {
   @Column()
   firstName: string;
 
+  @Column()
+  lastName: string;
+
   @OneToMany(() => FoodEntry, (entity) => entity.user)
   foodEntires: FoodEntry[];
 
   @OneToMany(() => FoodEntryGroup, (entity) => entity.user)
   foodEntryGroups: FoodEntryGroup[];
-
-  @Column()
-  lastName: string;
 
   @CreateDateColumn()
   createdAt: Date;

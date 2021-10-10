@@ -1,5 +1,5 @@
-import { FoodEntryGroup } from 'src/food-entry-group/entities/food-entry-group.entity';
-import { User } from 'src/user/entities/user.entity';
+import { FoodEntryGroup } from '../..//food-entry-group/entities/food-entry-group.entity';
+import { User } from '../..//user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -15,6 +15,9 @@ export class FoodEntry {
   id: number;
 
   @Column()
+  menuName: string;
+
+  @Column()
   calorie: number;
 
   @Column({ comment: 'Storing in smallest unit' })
@@ -23,11 +26,15 @@ export class FoodEntry {
   @ManyToOne(
     () => FoodEntryGroup,
     (foodEntryGroup) => foodEntryGroup.foodEntires,
+    { nullable: false },
   )
   foodEntryGroup: FoodEntryGroup;
 
   @ManyToOne(() => FoodEntry, (entity) => entity.user)
   user: User;
+
+  @Column()
+  takenAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

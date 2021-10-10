@@ -22,6 +22,10 @@ export class UserService {
     return this.userRepository.findOne(id);
   }
 
+  findOneOrFail(id: number) {
+    return this.userRepository.findOneOrFail(id);
+  }
+
   findOneByEmail(email: string) {
     return this.userRepository.findOne({ email });
   }

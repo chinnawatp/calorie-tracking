@@ -18,7 +18,11 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: ['dist/**/*.entity{.ts,.js}'],
+      entities: [
+        process.env.NODE_ENV === 'test'
+          ? __dirname + '/**/*.entity{.ts,.js}'
+          : 'dist/**/*.entity{.ts,.js}',
+      ],
       synchronize: false,
       logging: false,
     }),
