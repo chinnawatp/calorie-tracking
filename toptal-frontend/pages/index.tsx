@@ -1,40 +1,151 @@
-import Typography from "@mui/material/Typography";
-import * as React from "react";
+import WarningDailyLimit from "../components/WarningDailyLimit";
+import AddIcon from "@mui/icons-material/Add";
+import { DatePicker, MobileDatePicker } from "@mui/lab";
+import {
+  Alert,
+  Button,
+  CardContent,
+  Container,
+  Divider,
+  Grid,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import AddFoodEntryModal from "../components/AddFoodEntryModal";
 import Layout from "../components/common/Layout";
+import FoodEntryItem from "../components/FoodEntry";
+import APIClient from "../utils/APIClient";
+import { FoodEntryGroup, Pagination, User } from "../utils/types";
+import {CalendarToday} from '@mui/icons-material';
+import { Box } from "@mui/system";
 
-const Home = () => {
+export default function FoodEntries() {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [openAddFoodEntryModal, setOpenAddFoodEntryModal] =
+    React.useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [foodEntryGroupPagination, setFoodEndtryPagination] =
+    useState<Pagination<FoodEntryGroup>>();
+  const [user, setUser] = useState<User>();
+
+  const fetchData = async ({startDate, endDate} = {}) => {
+    try {
+      setLoading(true);
+      const data = await APIClient.getFoodEntryGroups({startDate, endDate});
+      setFoodEndtryPagination(data);
+
+      const userData = await APIClient.getCurrentUser();
+      setUser(userData);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const onDelete = async (id) => {
+    try {
+      await APIClient.deleteFoodEntry(id);
+      fetchData();
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const onFilter = () => {
+    fetchData({startDate, endDate});
+  }
+
+  if (loading) {
+    return <div>loading</div>;
+  }
+
   return (
     <Layout>
-      <Typography paragraph>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus
-        non enim praesent elementum facilisis leo vel. Risus at ultrices mi
-        tempus imperdiet. Semper risus in hendrerit gravida rutrum quisque non
-        tellus. Convallis convallis tellus id interdum velit laoreet id donec
-        ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl
-        suscipit adipiscing bibendum est ultricies integer quis. Cursus euismod
-        quis viverra nibh cras. Metus vulputate eu scelerisque felis imperdiet
-        proin fermentum leo. Mauris commodo quis imperdiet massa tincidunt. Cras
-        tincidunt lobortis feugiat vivamus at augue. At augue eget arcu dictum
-        varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt.
-        Lorem donec massa sapien faucibus et molestie ac.
-      </Typography>
-      <Typography paragraph>
-        Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-        ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar elementum
-        integer enim neque volutpat ac tincidunt. Ornare suspendisse sed nisi
-        lacus sed viverra tellus. Purus sit amet volutpat consequat mauris.
-        Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
-        vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra
-        accumsan in. In hendrerit gravida rutrum quisque non tellus orci ac.
-        Pellentesque nec nam aliquam sem et tortor. Habitant morbi tristique
-        senectus et. Adipiscing elit duis tristique sollicitudin nibh sit.
-        Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra
-        maecenas accumsan lacus vel facilisis. Nulla posuere sollicitudin
-        aliquam ultrices sagittis orci a.
-      </Typography>
+      <AddFoodEntryModal
+        open={openAddFoodEntryModal}
+        onClose={() => setOpenAddFoodEntryModal(false)}
+        onSuccess={() => {
+          fetchData();
+        }}
+      />
+      <Container maxWidth="sm">
+        <Button
+          style={{ margin: "16px 0" }}
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setOpenAddFoodEntryModal(true)}
+        >
+          Add Food Entry
+        </Button>
+        <div style={{ margin: "16px 0", display: 'flex', alignItems: 'center' }}>
+          <MobileDatePicker
+            label="Start Date"
+            value={startDate}
+            onChange={(newValue: Dayjs) => {
+              console.log({ newValue });
+              setStartDate(newValue);
+            }}
+            renderInput={(params) => <TextField {...params} />}
+          />
+          <MobileDatePicker
+            label="End Date"
+            value={endDate}
+            onChange={(newValue) => {
+              setEndDate(newValue);
+            }}
+            renderInput={(params) => <TextField {...params} />}
+          />
+          <Button onClick={onFilter} variant="contained" color="secondary" style={{marginLeft: 16}}>Filter</Button>
+        </div>
+        {foodEntryGroupPagination?.items.map((foodEntryGroup) => (
+          <Paper style={{ padding: 8, marginBottom: 16}} key={foodEntryGroup.id}>
+            <CardContent>
+              <Grid style={{ display: "flex", alignItems: 'center' }}>
+              <CalendarToday color="primary" style={{marginRight: 8}} /> 
+                <Typography
+                  fontWeight="bold"
+                  variant="h5"
+                  color="primary"
+                >
+                 {foodEntryGroup.date}
+                </Typography>
+              </Grid>
+              <Typography
+                fontWeight="bold"
+                variant="h6"
+                color="secondary"
+                gutterBottom
+              >
+                {`Total Calorie: ${foodEntryGroup.calorie}/${user?.calorieLimitPerDay} • Total Price: ${foodEntryGroup.price}/${user?.priceLimitPerDay}`}
+              </Typography>
+              <WarningDailyLimit user={user} foodEntryGroup={foodEntryGroup} />
+            </CardContent>
+            <Divider />
+            <Stack spacing={2}>
+              {foodEntryGroup.foodEntries.map((foodEntry) => (
+                <div key={foodEntry.id}>
+                  <FoodEntryItem
+                    foodEntry={foodEntry}
+                    onDelete={() => onDelete(foodEntry.id)}
+                  />
+                  <Divider />
+                </div>
+              ))}
+            </Stack>
+          </Paper>
+        ))}
+      </Container>
     </Layout>
   );
-};
-
-export default Home;
+}

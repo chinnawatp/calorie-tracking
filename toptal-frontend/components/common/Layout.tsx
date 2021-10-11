@@ -129,7 +129,7 @@ const Layout: React.FC<Props> = ({ children }) => {
           <ListItem
             button
             onClick={() => {
-              router.push("/food-entries");
+              router.push("/");
             }}
           >
             <ListItemIcon>
@@ -146,13 +146,24 @@ const Layout: React.FC<Props> = ({ children }) => {
           <ListItem
             button
             onClick={() => {
-              router.push("/stat");
+              router.push("/admin/dashboard");
             }}
           >
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary={"Report"} />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              router.push("/admin/food-entries");
+            }}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Food Entries"} />
           </ListItem>
         </List>
         <Divider />

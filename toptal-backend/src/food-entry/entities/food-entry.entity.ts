@@ -36,12 +36,12 @@ export class FoodEntry {
   @ManyToOne(() => FoodEntry, (entity) => entity.user)
   user: User;
 
-  @Column()
+  @Column({ type: 'timestamptz' })
   takenAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

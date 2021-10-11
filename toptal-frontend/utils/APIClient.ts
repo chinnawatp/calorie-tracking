@@ -95,4 +95,12 @@ export default class APIClient {
     });
     return res;
   }
+
+  static async getAdminReport() {
+    const res = await fetchAxios({
+      method: "get",
+      url: `/admin/report`,
+    });
+    return res;
+  }
 }

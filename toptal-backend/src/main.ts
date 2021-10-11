@@ -1,6 +1,14 @@
 import { NestFactory } from '@nestjs/core';
+import * as dayjs from 'dayjs';
 import { AppModule } from './app.module';
 import { seed } from './seed';
+import * as timezone from 'dayjs/plugin/timezone';
+import * as DayJSUtc from 'dayjs/plugin/utc';
+import * as weekday from 'dayjs/plugin/weekday';
+
+dayjs.extend(DayJSUtc);
+dayjs.extend(timezone);
+dayjs.extend(weekday);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

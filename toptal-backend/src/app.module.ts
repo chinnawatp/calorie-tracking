@@ -7,7 +7,7 @@ import { FoodEntryModule } from './food-entry/food-entry.module';
 import { UserModule } from './user/user.module';
 import { FoodEntryGroupModule } from './food-entry-group/food-entry-group.module';
 import { AuthModule } from './auth/auth.module';
-import { ReportModule } from './report/report.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -25,13 +25,13 @@ import { ReportModule } from './report/report.module';
           : 'dist/**/*.entity{.ts,.js}',
       ],
       synchronize: false,
-      logging: false,
+      logging: true,
     }),
     FoodEntryModule,
     UserModule,
     FoodEntryGroupModule,
     AuthModule,
-    ReportModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
