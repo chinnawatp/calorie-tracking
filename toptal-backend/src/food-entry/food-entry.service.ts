@@ -7,6 +7,7 @@ import { CreateFoodEntryDto } from './dto/create-food-entry.dto';
 import { FoodEntry } from './entities/food-entry.entity';
 import { FoodEntryGroup } from '../food-entry-group/entities/food-entry-group.entity';
 import { DATE_FORMAT } from '../utils/DateUtils';
+import { FoodEntryGroupService } from 'src/food-entry-group/food-entry-group.service';
 
 @Injectable()
 export class FoodEntryService {
@@ -15,6 +16,7 @@ export class FoodEntryService {
     private readonly foodEntryRepository: Repository<FoodEntry>,
     @InjectRepository(FoodEntryGroup)
     private readonly foodEntryGroupRepository: Repository<FoodEntryGroup>,
+    private readonly foodEntryGroupService: FoodEntryGroupService,
   ) {}
 
   async create(user: User, createFoodEntryDto: CreateFoodEntryDto) {
@@ -42,6 +44,8 @@ export class FoodEntryService {
     foodEntry.foodEntryGroup = foodEntryGroup;
     const result = await this.foodEntryRepository.save(foodEntry);
 
+    await this.foodEntryGroupService.updatePriceAndCalorie(foodEntryGroup.id);
+
     return result;
   }
 
@@ -61,13 +65,18 @@ export class FoodEntryService {
     foodEntry.calorie = updateFoodEntryDto.calorie;
     foodEntry.takenAt = new Date(updateFoodEntryDto.takenAt);
 
-    // TODO: recalculate total
+    await this.foodEntryRepository.save(foodEntry);
 
     return foodEntry;
   }
 
   async remove(id: number) {
     const foodEntry = await this.foodEntryRepository.findOneOrFail(id);
-    return this.foodEntryRepository.remove(foodEntry);
+
+    await this.foodEntryRepository.remove(foodEntry);
+
+    await this.foodEntryGroupService.updatePriceAndCalorie(
+      foodEntry.foodEntryGroupId,
+    );
   }
 }

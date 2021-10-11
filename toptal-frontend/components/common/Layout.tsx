@@ -1,3 +1,4 @@
+import * as localStorage from "local-storage";
 import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -12,19 +13,21 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import FastfoodIcon from "@mui/icons-material/Fastfood";
+import { useRouter } from "next/router";
+import { LOCAL_STORAGE_KEY } from "../../utils/constants";
 
 const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    minHeight: '100vh',
-    background: '#EAEEF3',
+    minHeight: "100vh",
+    background: "#EAEEF3",
     padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
@@ -69,6 +72,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 type Props = { children: React.ReactNode };
 
 const Layout: React.FC<Props> = ({ children }) => {
+  const router = useRouter();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -94,7 +98,7 @@ const Layout: React.FC<Props> = ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Calorie App 
+            Calorie App
           </Typography>
         </Toolbar>
       </AppBar>
@@ -122,25 +126,46 @@ const Layout: React.FC<Props> = ({ children }) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem
+            button
+            onClick={() => {
+              router.push("/food-entries");
+            }}
+          >
+            <ListItemIcon>
+              <FastfoodIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Food Entries"} />
+          </ListItem>
         </List>
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem>
+            <ListItemText primary={"Admin Menus"} />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              router.push("/stat");
+            }}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Report"} />
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListItem
+            button
+            onClick={() => {
+              localStorage.set(LOCAL_STORAGE_KEY.ACCESS_TOKEN, null);
+              router.push("/login");
+            }}
+          >
+            <ListItemText primary={"Logout"} />
+          </ListItem>
         </List>
       </Drawer>
       <Main open={open}>

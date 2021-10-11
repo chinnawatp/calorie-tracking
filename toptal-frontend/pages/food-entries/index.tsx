@@ -88,7 +88,7 @@ export default function FoodEntries() {
         >
           Add Food Entry
         </Button>
-        <div style={{ margin: "16px 0" }}>
+        <div style={{ margin: "16px 0", display: 'flex', alignItems: 'center' }}>
           <MobileDatePicker
             label="Start Date"
             value={startDate}
@@ -106,7 +106,7 @@ export default function FoodEntries() {
             }}
             renderInput={(params) => <TextField {...params} />}
           />
-          <Button onClick={onFilter} variant="contained" color="secondary">Filter</Button>
+          <Button onClick={onFilter} variant="contained" color="secondary" style={{marginLeft: 16}}>Filter</Button>
         </div>
         {foodEntryGroupPagination?.items.map((foodEntryGroup) => (
           <Paper style={{ padding: 8, marginBottom: 16}} key={foodEntryGroup.id}>

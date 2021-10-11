@@ -28,10 +28,10 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 2100 })
   calorieLimitPerDay: number;
 
-  @Column({ default: 0 })
+  @Column({ default: 1000 })
   priceLimitPerDay: number;
 
   @OneToMany(() => FoodEntry, (entity) => entity.user)

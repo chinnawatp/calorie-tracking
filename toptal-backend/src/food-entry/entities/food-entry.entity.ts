@@ -23,6 +23,9 @@ export class FoodEntry {
   @Column({ comment: 'Storing in smallest unit' })
   price: number;
 
+  @Column()
+  foodEntryGroupId: number;
+
   @ManyToOne(
     () => FoodEntryGroup,
     (foodEntryGroup) => foodEntryGroup.foodEntries,

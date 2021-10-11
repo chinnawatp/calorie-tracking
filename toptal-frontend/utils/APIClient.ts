@@ -1,79 +1,98 @@
-import { writeStorage } from "@rehooks/local-storage";
-import axios from "axios";
+import axios, { Method } from "axios";
 import { LOCAL_STORAGE_KEY } from "./constants";
 import * as localStorage from "local-storage";
 import { format } from "date-fns";
 
-export default class APIClient {
-  static async getFoodEntryGroups({ startDate, endDate }: { startDate?: Date, endDate?: Date }) {
-    const token = localStorage.get(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
+async function fetchAxios({
+  method,
+  url,
+  params,
+  data,
+}: {
+  method: Method;
+  url: string;
+  params?: any;
+  data?: any;
+}): Promise<any> {
+  const token = localStorage.get(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
 
-    let params = {}
-    if (startDate && endDate) {
-      params = {
-        startDate: format(startDate, 'yyyy-MM-dd'),
-        endDate: format(endDate, 'yyyy-MM-dd')
-      }
-    }
-
+  try {
     const res = await axios({
-      method: "get",
-      url: "/api/food-entry-groups",
+      method,
+      url: `/api/${url}`,
       params,
+      data,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
     });
 
     return res.data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+}
+
+export default class APIClient {
+  static async getFoodEntryGroups({
+    startDate,
+    endDate,
+  }: {
+    startDate?: Date;
+    endDate?: Date;
+  }) {
+    let params = {};
+    if (startDate && endDate) {
+      params = {
+        startDate: format(startDate, "yyyy-MM-dd"),
+        endDate: format(endDate, "yyyy-MM-dd"),
+      };
+    }
+
+    const res = await fetchAxios({
+      method: "get",
+      url: "food-entry-groups",
+      params,
+    });
+
+    return res;
   }
 
   static async getCurrentUser() {
-    const token = localStorage.get(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-    const res = await axios({
+    const res = await fetchAxios({
       method: "get",
-      url: "/api/auth/profile",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/auth/profile",
     });
 
-    return res.data;
+    return res;
   }
 
   static async login(data: { email: string; password: string }) {
-    const res = await axios({
+    const res = await fetchAxios({
       method: "post",
-      url: "/api/auth/login",
+      url: "/auth/login",
       data,
     });
 
-    const { accessToken } = res.data;
+    const { accessToken } = res;
     localStorage.set(LOCAL_STORAGE_KEY.ACCESS_TOKEN, accessToken);
   }
 
-  static async createFoodEntry(data) {
-    const token = localStorage.get(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-    const res = await axios({
+  static async createFoodEntry(data: any) {
+    const res = await fetchAxios({
       method: "post",
-      url: "/api/food-entries",
+      url: "/food-entries",
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
-    return res.data;
+    return res;
   }
 
-  static async deleteFoodEntry(id) {
+  static async deleteFoodEntry(id: number) {
     const token = localStorage.get(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-    const res = await axios({
+    const res = await fetchAxios({
       method: "delete",
-      url: `/api/food-entries/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/food-entries/${id}`,
     });
-    return res.data;
+    return res;
   }
 }

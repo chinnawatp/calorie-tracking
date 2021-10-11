@@ -1,19 +1,42 @@
-import * as React from "react";
+import { MobileDateTimePicker } from "@mui/lab";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { MobileDateTimePicker } from "@mui/lab";
-import { Grid, Stack } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import { styled } from "@mui/system";
+import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import APIClient from "../utils/APIClient";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup
+  .object({
+    menuName: yup.string().required(),
+    calorie: yup.number().positive().integer().required(),
+    price: yup.number().positive().integer().required(),
+    takenAt: yup.date().required(),
+  })
+  .required();
 
 export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
-  const { control, handleSubmit, setValue } = useForm();
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const handleClose = () => {
+    reset();
+    onClose();
+  }
 
   const onSubmit = async (data) => {
     const { takenAt } = data;
@@ -22,11 +45,10 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
       takenAt: takenAt.toISOString(),
     };
 
-    console.log({ submitValues });
-
     try {
       await APIClient.createFoodEntry(submitValues);
-      toast.success('Created food entry successfully');
+      toast.success("Created food entry successfully");
+      handleClose();
       onSuccess();
     } catch (error) {
       toast.error(error.message);
@@ -36,13 +58,14 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Food Entry</DialogTitle>
-      <DialogContent dividers>
+      <StyledDialogContent dividers>
         <Controller
           name="menuName"
           control={control}
           defaultValue=""
           render={({ field }) => (
             <TextField
+              error={errors[field.name]}
               autoFocus
               label="Food/Product Name"
               fullWidth
@@ -56,6 +79,7 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
           control={control}
           render={({ field }) => (
             <TextField
+              error={errors[field.name]}
               autoFocus
               type="number"
               label="Calorie"
@@ -70,6 +94,7 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
           control={control}
           render={({ field }) => (
             <TextField
+              error={errors[field.name]}
               autoFocus
               type="number"
               label="Price"
@@ -90,13 +115,15 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
               onChange={(dateTime) => {
                 setValue("takenAt", dateTime);
               }}
-              renderInput={(params) => <TextField {...params} {...field} />}
+              renderInput={(params) => <TextField
+                error={errors[field.name]}
+                {...params} {...field} />}
             />
           )}
         />
-      </DialogContent>
+      </StyledDialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleSubmit(onSubmit)} variant="contained">
           Submit
         </Button>
@@ -104,3 +131,9 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
     </Dialog>
   );
 }
+
+const StyledDialogContent = styled(DialogContent)`
+  > *:not(:last-child) {
+    margin-bottom: 16px;
+  }
+`;
