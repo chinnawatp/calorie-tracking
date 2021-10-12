@@ -8,6 +8,11 @@ import { FoodEntry } from './entities/food-entry.entity';
 import { FoodEntryGroup } from '../food-entry-group/entities/food-entry-group.entity';
 import { DATE_FORMAT } from '../utils/DateUtils';
 import { FoodEntryGroupService } from 'src/food-entry-group/food-entry-group.service';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class FoodEntryService {
@@ -19,12 +24,30 @@ export class FoodEntryService {
     private readonly foodEntryGroupService: FoodEntryGroupService,
   ) {}
 
+  async paginate({
+    options,
+  }: {
+    options: IPaginationOptions;
+  }): Promise<Pagination<FoodEntry>> {
+    const queryBuilder =
+      this.foodEntryRepository.createQueryBuilder('foodEntry');
+    queryBuilder.leftJoinAndSelect(
+      'foodEntry.foodEntryGroup',
+      'foodEntryGroup',
+    );
+    queryBuilder.leftJoinAndSelect('foodEntry.user', 'user');
+    queryBuilder.orderBy('foodEntry.id');
+
+    return paginate<FoodEntry>(queryBuilder, options);
+  }
+
   async create(user: User, createFoodEntryDto: CreateFoodEntryDto) {
     const foodEntry = new FoodEntry();
     foodEntry.menuName = createFoodEntryDto.menuName;
     foodEntry.price = createFoodEntryDto.price;
     foodEntry.calorie = createFoodEntryDto.calorie;
     foodEntry.takenAt = new Date(createFoodEntryDto.takenAt);
+    foodEntry.user = user;
 
     let foodEntryGroup = await this.foodEntryGroupRepository.findOne({
       where: {

@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import APIClient from "../utils/APIClient";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { FoodEntry } from "../utils/types";
 
 const schema = yup
   .object({
@@ -22,7 +23,23 @@ const schema = yup
   })
   .required();
 
-export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
+type Props = {
+  open: boolean;
+  editingFoodEntry?: FoodEntry;
+  fetchCreate: (value: any) => Promise<any>;
+  fetchUpdate: (id: number, value: any) => Promise<any>;
+  onClose: () => void;
+  onSuccess: () => void;
+};
+
+export default function AddFoodEntryModal({
+  open,
+  editingFoodEntry,
+  fetchCreate,
+  fetchUpdate,
+  onClose,
+  onSuccess,
+}: Props) {
   const {
     control,
     handleSubmit,
@@ -33,10 +50,19 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
     resolver: yupResolver(schema),
   });
 
+  React.useEffect(() => {
+    if (editingFoodEntry) {
+      setValue("menuName", editingFoodEntry.menuName);
+      setValue("calorie", editingFoodEntry.calorie);
+      setValue("price", editingFoodEntry.price);
+      setValue("takenAt", new Date(editingFoodEntry.takenAt));
+    }
+  }, [editingFoodEntry, setValue]);
+
   const handleClose = () => {
     reset();
     onClose();
-  }
+  };
 
   const onSubmit = async (data) => {
     const { takenAt } = data;
@@ -46,8 +72,13 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
     };
 
     try {
-      await APIClient.createFoodEntry(submitValues);
-      toast.success("Created food entry successfully");
+      if (editingFoodEntry) {
+        await fetchUpdate(editingFoodEntry.id, submitValues);  
+      } else {
+        await fetchCreate(submitValues);
+      }
+      
+      toast.success(editingFoodEntry ? "Updated food entry successfully" : "Created food entry successfully");
       handleClose();
       onSuccess();
     } catch (error) {
@@ -115,9 +146,9 @@ export default function AddFoodEntryModal({ open, onClose, onSuccess }) {
               onChange={(dateTime) => {
                 setValue("takenAt", dateTime);
               }}
-              renderInput={(params) => <TextField
-                error={errors[field.name]}
-                {...params} {...field} />}
+              renderInput={(params) => (
+                <TextField error={errors[field.name]} {...params} {...field} />
+              )}
             />
           )}
         />

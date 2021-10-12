@@ -11,6 +11,7 @@ export interface FoodEntry {
   price: number;
   calorie: number;
   takenAt: string;
+  user: User;
 }
 
 export interface FoodEntryGroup {
@@ -22,5 +23,12 @@ export interface FoodEntryGroup {
 }
 
 export interface Pagination<T> {
-  items: T[]
+  items: T[],
+  meta: {
+    currentPage: number,
+    itemCount: number,
+    itemsPerPage: number,
+    totalItems: number,
+    totalPages: number,
+  }
 }

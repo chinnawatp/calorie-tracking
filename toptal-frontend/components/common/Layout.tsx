@@ -161,7 +161,7 @@ const Layout: React.FC<Props> = ({ children }) => {
             }}
           >
             <ListItemIcon>
-              <DashboardIcon />
+              <FastfoodIcon />
             </ListItemIcon>
             <ListItemText primary={"Food Entries"} />
           </ListItem>

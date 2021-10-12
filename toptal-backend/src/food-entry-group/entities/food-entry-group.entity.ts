@@ -22,7 +22,9 @@ export class FoodEntryGroup {
   @Column({ type: 'date' })
   date: string;
 
-  @OneToMany(() => FoodEntry, (foodEntry) => foodEntry.foodEntryGroup)
+  @OneToMany(() => FoodEntry, (foodEntry) => foodEntry.foodEntryGroup, {
+    eager: true
+  })
   foodEntries: FoodEntry[];
 
   @ManyToOne(() => User, (user) => user.foodEntryGroups)

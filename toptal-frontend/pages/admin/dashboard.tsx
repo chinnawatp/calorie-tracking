@@ -42,20 +42,20 @@ export default function ReportPage() {
           </Grid>
           <Grid item xs={6} md={6}>
             <Item>
-              <div>Number of added entries today</div>
-              <Typography>{`${data?.numberOfFoodEntriesToday} Food Entries`}</Typography>
+              <div>Today</div>
+              <Typography color="primary">{`${data?.numberOfFoodEntriesToday} Food Entries`}</Typography>
             </Item>
           </Grid>
           <Grid item xs={6} md={6}>
             <Item>
-              <div>Number of added entries last 7 days</div>
-              <Typography>{`${data?.numberOfFoodEntriesLastSevenDay} Food Entries`}</Typography>
+              <div>Last 7 days</div>
+              <Typography color="primary">{`${data?.numberOfFoodEntriesLastSevenDay} Food Entries`}</Typography>
             </Item>
           </Grid>
           <Grid item xs={6} md={6}>
             <Item>
-              <div>Number of added entries last week</div>
-              <Typography>{`${data?.numberOfFoodEntriesLastWeek} Food Entries`}</Typography>
+              <div>Last week (Sun - Sat)</div>
+              <Typography color="primary">{`${data?.numberOfFoodEntriesLastWeek} Food Entries`}</Typography>
             </Item>
           </Grid>
         </Grid>
@@ -66,8 +66,8 @@ export default function ReportPage() {
           </Grid>
           <Grid item xs={6} md={6}>
             <Item>
-              <div>Average number of calories per user last 7 days</div>
-              <Typography>{`${data?.averageCaloriePerUserLastSevenDay} Calorie`}</Typography>
+              <div>Last 7 days</div>
+              <Typography color="primary">{`${data?.averageCaloriePerUserLastSevenDay} Calorie`}</Typography>
             </Item>
           </Grid>
         </Grid>

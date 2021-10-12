@@ -37,11 +37,15 @@ export default class APIClient {
   static async getFoodEntryGroups({
     startDate,
     endDate,
+    page,
   }: {
-    startDate?: Date;
-    endDate?: Date;
+    startDate?: string;
+    endDate?: string;
+    page?: string;
   }) {
-    let params = {};
+    let params = {
+      page,
+    };
     if (startDate && endDate) {
       params = {
         startDate: format(startDate, "yyyy-MM-dd"),
@@ -100,6 +104,42 @@ export default class APIClient {
     const res = await fetchAxios({
       method: "get",
       url: `/admin/report`,
+    });
+    return res;
+  }
+
+  static async getAdminFoodEntries({ page } = {}) {
+    const res = await fetchAxios({
+      method: "get",
+      url: `/admin/food-entries`,
+      params: { page },
+    });
+    return res;
+  }
+
+  static async adminCreateFoodEntry(data: any) {
+    const res = await fetchAxios({
+      method: "post",
+      url: "/admin/food-entries",
+      data,
+    });
+    return res;
+  }
+
+  static async adminUpdateFoodEntry(id: number, data: any) {
+    console.log({ data });
+    const res = await fetchAxios({
+      method: "put",
+      data,
+      url: `/admin/food-entries/${id}`,
+    });
+    return res;
+  }
+
+  static async adminRemoveFoodEntry(id: number) {
+    const res = await fetchAxios({
+      method: "delete",
+      url: `/admin/food-entries/${id}`,
     });
     return res;
   }

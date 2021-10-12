@@ -7,11 +7,12 @@ import { FoodEntryGroup } from '../food-entry-group/entities/food-entry-group.en
 import { FoodEntryGroupModule } from 'src/food-entry-group/food-entry-group.module';
 
 @Module({
+  controllers: [FoodEntryController],
+  providers: [FoodEntryService],
   imports: [
     FoodEntryGroupModule,
     TypeOrmModule.forFeature([FoodEntry, FoodEntryGroup]),
   ],
-  controllers: [FoodEntryController],
-  providers: [FoodEntryService],
+  exports: [FoodEntryService],
 })
 export class FoodEntryModule {}

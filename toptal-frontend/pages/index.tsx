@@ -8,7 +8,9 @@ import {
   Container,
   Divider,
   Grid,
+  Pagination as MuiPagination,
   Paper,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -20,7 +22,7 @@ import Layout from "../components/common/Layout";
 import FoodEntryItem from "../components/FoodEntry";
 import APIClient from "../utils/APIClient";
 import { FoodEntryGroup, Pagination, User } from "../utils/types";
-import {CalendarToday} from '@mui/icons-material';
+import { CalendarToday } from "@mui/icons-material";
 import { Box } from "@mui/system";
 
 export default function FoodEntries() {
@@ -34,10 +36,14 @@ export default function FoodEntries() {
     useState<Pagination<FoodEntryGroup>>();
   const [user, setUser] = useState<User>();
 
-  const fetchData = async ({startDate, endDate} = {}) => {
+  const fetchData = async ({
+    startDate,
+    endDate,
+    page
+  }: { startDate?: string; endDate?: string } = {}) => {
     try {
       setLoading(true);
-      const data = await APIClient.getFoodEntryGroups({startDate, endDate});
+      const data = await APIClient.getFoodEntryGroups({ startDate, endDate, page });
       setFoodEndtryPagination(data);
 
       const userData = await APIClient.getCurrentUser();
@@ -63,18 +69,17 @@ export default function FoodEntries() {
   };
 
   const onFilter = () => {
-    fetchData({startDate, endDate});
-  }
-
-  if (loading) {
-    return <div>loading</div>;
-  }
+    fetchData({ startDate, endDate });
+  };
 
   return (
     <Layout>
       <AddFoodEntryModal
         open={openAddFoodEntryModal}
-        onClose={() => setOpenAddFoodEntryModal(false)}
+        fetchCreate={APIClient.createFoodEntry}
+        onClose={() => {
+          setOpenAddFoodEntryModal(false);
+        }}
         onSuccess={() => {
           fetchData();
         }}
@@ -88,7 +93,9 @@ export default function FoodEntries() {
         >
           Add Food Entry
         </Button>
-        <div style={{ margin: "16px 0", display: 'flex', alignItems: 'center' }}>
+        <div
+          style={{ margin: "16px 0", display: "flex", alignItems: "center" }}
+        >
           <MobileDatePicker
             label="Start Date"
             value={startDate}
@@ -106,25 +113,42 @@ export default function FoodEntries() {
             }}
             renderInput={(params) => <TextField {...params} />}
           />
-          <Button onClick={onFilter} variant="contained" color="secondary" style={{marginLeft: 16}}>Filter</Button>
+          <Button
+            onClick={onFilter}
+            variant="contained"
+            color="secondary"
+            style={{ marginLeft: 16 }}
+          >
+            Filter
+          </Button>
         </div>
+        {loading && (
+          <div>
+            <Skeleton variant="text" />
+            <Skeleton
+              variant="rectangular"
+              style={{ marginBottom: 32 }}
+              width={"100%"}
+              height={118}
+            />
+          </div>
+        )}
         {foodEntryGroupPagination?.items.map((foodEntryGroup) => (
-          <Paper style={{ padding: 8, marginBottom: 16}} key={foodEntryGroup.id}>
+          <Paper
+            style={{ padding: 8, marginBottom: 16 }}
+            key={foodEntryGroup.id}
+          >
             <CardContent>
-              <Grid style={{ display: "flex", alignItems: 'center' }}>
-              <CalendarToday color="primary" style={{marginRight: 8}} /> 
-                <Typography
-                  fontWeight="bold"
-                  variant="h5"
-                  color="primary"
-                >
-                 {foodEntryGroup.date}
+              <Grid style={{ display: "flex", alignItems: "center" }}>
+                <CalendarToday color="primary" style={{ marginRight: 8 }} />
+                <Typography fontWeight="bold" variant="h5" color="primary">
+                  {foodEntryGroup.date}
                 </Typography>
               </Grid>
               <Typography
                 fontWeight="bold"
                 variant="h6"
-                color="secondary"
+                color="text.secondary"
                 gutterBottom
               >
                 {`Total Calorie: ${foodEntryGroup.calorie}/${user?.calorieLimitPerDay} • Total Price: ${foodEntryGroup.price}/${user?.priceLimitPerDay}`}
@@ -145,6 +169,13 @@ export default function FoodEntries() {
             </Stack>
           </Paper>
         ))}
+        {foodEntryGroupPagination?.meta && <MuiPagination
+          count={foodEntryGroupPagination?.meta.totalPages}
+          page={foodEntryGroupPagination?.meta.currentPage}
+          onChange={(value, page) => {
+            fetchData({startDate, endDate, page})
+          }}
+        />}
       </Container>
     </Layout>
   );

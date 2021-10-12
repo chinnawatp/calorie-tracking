@@ -1,23 +1,160 @@
-import { Card, Grid, Paper, Container } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import {
+  Button,
+  Container,
+  Paper,
+  TableFooter,
+  Pagination as MuiPagination,
+} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import { styled } from "@mui/system";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import AddFoodEntryModal from "../../components/AddFoodEntryModal";
+import DeleteConfirmationDialog from "../../components/common/DeleteConfirmationDiaglog";
 import Layout from "../../components/common/Layout";
+import APIClient from "../../utils/APIClient";
+import { FoodEntry, Pagination } from "../../utils/types";
 
 export default function AdminFoodEntriesPage() {
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<Pagination<FoodEntry>>();
+  const [openAddFoodEntryModal, setOpenAddFoodEntryModal] =
+    React.useState(false);
+  const [editingFoodEntry, setEditingFoodEntry] = useState();
+  const [deletingFoodEntry, setDeletingFoodEntry] = useState();
+
+  const fetchData = async ({ page } = {}) => {
+    try {
+      const data = await APIClient.getAdminFoodEntries({ page });
+      setPagination(data);
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const onDelete = async () => {
+    try {
+      await APIClient.adminRemoveFoodEntry(deletingFoodEntry.id);
+      fetchData();
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <Layout>
       <Container>
-        <Grid container spacing={2}>
-          <Grid item xs={6} md={6}>
-            <Item>Number of added entries last 7 days</Item>
-          </Grid>
-          <Grid item xs={6} md={6}>
-            <Item>Number of added entries last week</Item>
-          </Grid>
-          <Grid item xs={6} md={6}>
-            <Item>Average number of calories per user last 7 days</Item>
-          </Grid>
-        </Grid>
+        <AddFoodEntryModal
+          open={openAddFoodEntryModal}
+          editingFoodEntry={editingFoodEntry}
+          fetchCreate={APIClient.adminCreateFoodEntry}
+          fetchUpdate={APIClient.adminUpdateFoodEntry}
+          onSuccess={() => {
+            fetchData();
+          }}
+          onClose={() => {
+            setEditingFoodEntry(null);
+            setOpenAddFoodEntryModal(false);
+          }}
+        />
+        <DeleteConfirmationDialog
+          onDelete={onDelete}
+          open={deletingFoodEntry}
+          onClose={() => {
+            setDeletingFoodEntry(null);
+          }}
+        />
+        <Button
+          style={{ margin: "16px 0" }}
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setOpenAddFoodEntryModal(true)}
+        >
+          Add Food Entry
+        </Button>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>id</TableCell>
+                <TableCell>Menu Name</TableCell>
+                <TableCell align="right">Calories</TableCell>
+                <TableCell align="right">Price</TableCell>
+                <TableCell align="right">Taken At</TableCell>
+                <TableCell align="right">User</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {pagination?.items.map((row) => (
+                <TableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.id}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {row.menuName}
+                  </TableCell>
+                  <TableCell align="right">{row.calorie}</TableCell>
+                  <TableCell align="right">{row.price}</TableCell>
+                  <TableCell align="right">{row.takenAt}</TableCell>
+                  <TableCell align="right">{row.user.firstName}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      onClick={() => {
+                        setEditingFoodEntry(row);
+                        setOpenAddFoodEntryModal(true);
+                      }}
+                      variant="contained"
+                      style={{ marginBottom: 8 }}
+                    >
+                      Edit
+                    </Button>
+                    <div>
+                      <Button
+                        onClick={() => setDeletingFoodEntry(row)}
+                        color="error"
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+            <TableRow style={{height: 50}}>
+              <TableCell>
+              {pagination?.meta && (
+                <MuiPagination
+                  count={pagination?.meta.totalPages}
+                  page={pagination?.meta.currentPage}
+                  onChange={(_, page) => {
+                    fetchData({ page });
+                  }}
+                />
+              )}
+              </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
       </Container>
     </Layout>
   );

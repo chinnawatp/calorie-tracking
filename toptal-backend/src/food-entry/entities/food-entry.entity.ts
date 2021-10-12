@@ -33,7 +33,10 @@ export class FoodEntry {
   )
   foodEntryGroup: FoodEntryGroup;
 
-  @ManyToOne(() => FoodEntry, (entity) => entity.user)
+  @Column()
+  userId: number;
+
+  @ManyToOne(() => User, (entity) => entity.foodEntries)
   user: User;
 
   @Column({ type: 'timestamptz' })

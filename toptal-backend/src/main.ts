@@ -16,6 +16,7 @@ async function bootstrap() {
   console.log({ ACTION: process.env.ACTION });
   if (process.env.ACTION === 'SEED') {
     await seed(app);
+    return app.close();
   }
 
   await app.listen(3000);
