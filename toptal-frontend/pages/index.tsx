@@ -42,7 +42,7 @@ export default function FoodEntries() {
     startDate,
     endDate,
     page,
-  }: { startDate?: string; endDate?: string } = {}) => {
+  }: { startDate: string | null; endDate: string | null; page?: number }) => {
     try {
       setLoading(true);
       const data = await APIClient.getFoodEntryGroups({
@@ -62,7 +62,7 @@ export default function FoodEntries() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData({startDate, endDate});
   }, []);
 
   const onDelete = async (id) => {
