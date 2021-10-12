@@ -19,8 +19,8 @@ export class FoodEntryGroup {
   @Column({ comment: 'Storing in smallest unit' })
   price: number;
 
-  @Column({ type: 'date' })
-  date: string;
+  @Column({ type: 'timestamptz' })
+  takenAt: Date;
 
   @OneToMany(() => FoodEntry, (foodEntry) => foodEntry.foodEntryGroup, {
     eager: true

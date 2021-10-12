@@ -10,6 +10,8 @@ import { Between, FindConditions, FindOneOptions, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { FoodEntryGroup } from './entities/food-entry-group.entity';
 import { sumBy } from 'lodash';
+import * as dayjs from 'dayjs';
+import { DEFAULT_TIMEZONE } from 'src/utils/DateUtils';
 
 @Injectable()
 export class FoodEntryGroupService {
@@ -38,13 +40,16 @@ export class FoodEntryGroupService {
       },
     };
     if (startDate && endDate) {
-      where.date = Between(startDate, endDate);
+      where.takenAt = Between(
+        dayjs(startDate, DEFAULT_TIMEZONE),
+        dayjs(endDate, DEFAULT_TIMEZONE),
+      );
     }
 
     return paginate<FoodEntryGroup>(this.repository, options, {
       where,
       order: {
-        date: 'DESC',
+        takenAt: 'DESC',
       },
     });
   }

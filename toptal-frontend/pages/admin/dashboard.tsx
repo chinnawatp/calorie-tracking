@@ -11,27 +11,40 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Layout from "../../components/common/Layout";
 import APIClient from "../../utils/APIClient";
+import useOnlyAdmin from "../../utils/hooks/useOnlyAdmin";
 
 export default function ReportPage() {
+  useOnlyAdmin();
+
   const [data, setData] = useState<{
     numberOfFoodEntriesLastSevenDay: number;
     numberOfFoodEntriesLastWeek: number;
     numberOfFoodEntriesToday: number;
     averageCaloriePerUserLastSevenDay: number;
   }>();
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const res = await APIClient.getAdminReport();
       setData(res);
     } catch (error) {
       toast.error('Failed to get report')
+    } finally {
+      setLoading(false)
     }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  if (loading) {
+    return <Layout>
+      Loading...
+    </Layout>
+  }
 
   return (
     <Layout>

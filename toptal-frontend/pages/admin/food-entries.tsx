@@ -19,9 +19,13 @@ import AddFoodEntryModal from "../../components/AddFoodEntryModal";
 import DeleteConfirmationDialog from "../../components/common/DeleteConfirmationDiaglog";
 import Layout from "../../components/common/Layout";
 import APIClient from "../../utils/APIClient";
+import { formatPrice } from "../../utils/Formatter";
+import useOnlyAdmin from "../../utils/hooks/useOnlyAdmin";
 import { FoodEntry, Pagination } from "../../utils/types";
 
 export default function AdminFoodEntriesPage() {
+  useOnlyAdmin();
+
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<Pagination<FoodEntry>>();
   const [openAddFoodEntryModal, setOpenAddFoodEntryModal] =
@@ -112,7 +116,7 @@ export default function AdminFoodEntriesPage() {
                     {row.menuName}
                   </TableCell>
                   <TableCell align="right">{row.calorie}</TableCell>
-                  <TableCell align="right">{row.price}</TableCell>
+                  <TableCell align="right">{`$${formatPrice(row.price)}`}</TableCell>
                   <TableCell align="right">{row.takenAt}</TableCell>
                   <TableCell align="right">{row.user.firstName}</TableCell>
                   <TableCell align="right">

@@ -46,8 +46,8 @@ async function createFoodEntry(
   foodEntry.price = getRandomInt(1, 1500);
   foodEntry.calorie = getRandomInt(1, 1000);
   foodEntry.takenAt = getRandomDate(
-    new Date('2021-01-01'),
-    new Date('2021-03-01'),
+    new Date('2021-10-01'),
+    new Date('2021-11-01'),
   ).toISOString();
 
   const foodEntryService = app.get(FoodEntryService);

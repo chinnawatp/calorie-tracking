@@ -24,6 +24,8 @@ import APIClient from "../utils/APIClient";
 import { FoodEntryGroup, Pagination, User } from "../utils/types";
 import { CalendarToday } from "@mui/icons-material";
 import { Box } from "@mui/system";
+import { formatPrice } from "../utils/Formatter";
+import { format } from "date-fns";
 
 export default function FoodEntries() {
   const [startDate, setStartDate] = useState(null);
@@ -39,11 +41,15 @@ export default function FoodEntries() {
   const fetchData = async ({
     startDate,
     endDate,
-    page
+    page,
   }: { startDate?: string; endDate?: string } = {}) => {
     try {
       setLoading(true);
-      const data = await APIClient.getFoodEntryGroups({ startDate, endDate, page });
+      const data = await APIClient.getFoodEntryGroups({
+        startDate,
+        endDate,
+        page,
+      });
       setFoodEndtryPagination(data);
 
       const userData = await APIClient.getCurrentUser();
@@ -142,40 +148,48 @@ export default function FoodEntries() {
               <Grid style={{ display: "flex", alignItems: "center" }}>
                 <CalendarToday color="primary" style={{ marginRight: 8 }} />
                 <Typography fontWeight="bold" variant="h5" color="primary">
-                  {foodEntryGroup.date}
+                  {format(new Date(foodEntryGroup.takenAt), "yyyy-MM-dd")}
                 </Typography>
               </Grid>
               <Typography
                 fontWeight="bold"
-                variant="h6"
+                variant="h7"
                 color="text.secondary"
                 gutterBottom
               >
-                {`Total Calorie: ${foodEntryGroup.calorie}/${user?.calorieLimitPerDay} • Total Price: ${foodEntryGroup.price}/${user?.priceLimitPerDay}`}
+                {`Total Calorie: ${foodEntryGroup.calorie}/${
+                  user?.calorieLimitPerDay
+                } • Total Price: $${formatPrice(
+                  foodEntryGroup.price
+                )}/$${formatPrice(user?.priceLimitPerDay || 0)}`}
               </Typography>
               <WarningDailyLimit user={user} foodEntryGroup={foodEntryGroup} />
             </CardContent>
             <Divider />
             <Stack spacing={2}>
-              {foodEntryGroup.foodEntries.map((foodEntry) => (
+              {foodEntryGroup.foodEntries.map((foodEntry, index) => (
                 <div key={foodEntry.id}>
                   <FoodEntryItem
                     foodEntry={foodEntry}
                     onDelete={() => onDelete(foodEntry.id)}
                   />
-                  <Divider />
+                  {index !== foodEntryGroup.foodEntries.length - 1 && (
+                    <Divider />
+                  )}
                 </div>
               ))}
             </Stack>
           </Paper>
         ))}
-        {foodEntryGroupPagination?.meta && <MuiPagination
-          count={foodEntryGroupPagination?.meta.totalPages}
-          page={foodEntryGroupPagination?.meta.currentPage}
-          onChange={(value, page) => {
-            fetchData({startDate, endDate, page})
-          }}
-        />}
+        {foodEntryGroupPagination?.meta && (
+          <MuiPagination
+            count={foodEntryGroupPagination?.meta.totalPages}
+            page={foodEntryGroupPagination?.meta.currentPage}
+            onChange={(value, page) => {
+              fetchData({ startDate, endDate, page });
+            }}
+          />
+        )}
       </Container>
     </Layout>
   );

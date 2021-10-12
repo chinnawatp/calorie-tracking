@@ -40,14 +40,11 @@ export class FoodEntryController {
     @Param('id') id: string,
     @Body() updateFoodEntryDto: CreateFoodEntryDto,
   ) {
-    // TODO: Do not allow update if not owner
     return this.foodEntryService.update(+id, updateFoodEntryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    // TODO: Do not allow delete if not owner
-
     return this.foodEntryService.remove(+id);
   }
 }

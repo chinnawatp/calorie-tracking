@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import React from "react";
+import { formatPrice } from "../utils/Formatter";
 import { FoodEntry } from "../utils/types";
 
 type Props = {
@@ -28,7 +29,7 @@ export default function FoodEntryItem({ foodEntry, onDelete }: Props) {
         {`${foodEntry.calorie} Cal`}
       </CalorieTypography>
       <Typography align="left" color="text.secondary">
-        {`$${foodEntry.price}`}
+        {`$${formatPrice(foodEntry.price)}`}
       </Typography>
       <Typography align="left" color="text.secondary" gutterBottom>
         {new Date(foodEntry.takenAt).toLocaleString()}

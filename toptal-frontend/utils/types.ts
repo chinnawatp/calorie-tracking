@@ -3,6 +3,11 @@ export interface User {
   lastName: string;
   calorieLimitPerDay: number;
   priceLimitPerDay: number;
+  roles: Role[];
+}
+
+export interface Role {
+  name: 'ADMIN';
 }
 
 export interface FoodEntry {
@@ -18,7 +23,7 @@ export interface FoodEntryGroup {
   id: number;
   calorie: number;
   price: number;
-  date: string;
+  takenAt: string;
   foodEntries: FoodEntry[];
 }
 

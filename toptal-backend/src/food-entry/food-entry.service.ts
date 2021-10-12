@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
 import { User } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { CreateFoodEntryDto } from './dto/create-food-entry.dto';
 import { FoodEntry } from './entities/food-entry.entity';
 import { FoodEntryGroup } from '../food-entry-group/entities/food-entry-group.entity';
@@ -51,7 +51,10 @@ export class FoodEntryService {
 
     let foodEntryGroup = await this.foodEntryGroupRepository.findOne({
       where: {
-        date: dayjs(foodEntry.takenAt).format(DATE_FORMAT),
+        takenAt: Between(
+          dayjs(foodEntry.takenAt).startOf('day'),
+          dayjs(foodEntry.takenAt).endOf('day'),
+        ),
       },
     });
 
@@ -59,7 +62,7 @@ export class FoodEntryService {
       foodEntryGroup = new FoodEntryGroup();
       foodEntryGroup.calorie = 0;
       foodEntryGroup.price = 0;
-      foodEntryGroup.date = dayjs(foodEntry.takenAt).format(DATE_FORMAT);
+      foodEntryGroup.takenAt = dayjs(foodEntry.takenAt).toDate();
       foodEntryGroup.user = user;
       await this.foodEntryGroupRepository.save(foodEntryGroup);
     }

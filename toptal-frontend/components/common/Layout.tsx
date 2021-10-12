@@ -13,68 +13,32 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import FastfoodIcon from "@mui/icons-material/Fastfood";
 import { useRouter } from "next/router";
 import { LOCAL_STORAGE_KEY } from "../../utils/constants";
+import { User } from "../../utils/types";
+import APIClient from "../../utils/APIClient";
+import AdminList from "./AdminList";
 
 const drawerWidth = 240;
 
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
-  ({ theme, open }) => ({
-    flexGrow: 1,
-    minHeight: "100vh",
-    background: "#EAEEF3",
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: `-${drawerWidth}px`,
-    ...(open && {
-      transition: theme.transitions.create("margin", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    }),
-  })
-);
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: "flex-end",
-}));
 
 type Props = { children: React.ReactNode };
 
 const Layout: React.FC<Props> = ({ children }) => {
   const router = useRouter();
   const theme = useTheme();
+  const [currentUser, setCurrentUser] = React.useState<User>();
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    APIClient.getCurrentUser().then((user: User) => {
+      setCurrentUser(user);
+    });
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -83,6 +47,7 @@ const Layout: React.FC<Props> = ({ children }) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -139,34 +104,7 @@ const Layout: React.FC<Props> = ({ children }) => {
           </ListItem>
         </List>
         <Divider />
-        <List>
-          <ListItem>
-            <ListItemText primary={"Admin Menus"} />
-          </ListItem>
-          <ListItem
-            button
-            onClick={() => {
-              router.push("/admin/dashboard");
-            }}
-          >
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Report"} />
-          </ListItem>
-          <ListItem
-            button
-            onClick={() => {
-              router.push("/admin/food-entries");
-            }}
-          >
-            <ListItemIcon>
-              <FastfoodIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Food Entries"} />
-          </ListItem>
-        </List>
-        <Divider />
+        <AdminList user={currentUser} />
         <List>
           <ListItem
             button
@@ -186,5 +124,52 @@ const Layout: React.FC<Props> = ({ children }) => {
     </Box>
   );
 };
+
+
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    minHeight: "100vh",
+    background: "#EAEEF3",
+    padding: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+      transition: theme.transitions.create("margin", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
+    }),
+  })
+);
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: `${drawerWidth}px`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: "flex-end",
+}));
 
 export default Layout;

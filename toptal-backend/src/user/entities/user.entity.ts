@@ -31,7 +31,8 @@ export class User {
   @Column({ default: 2100 })
   calorieLimitPerDay: number;
 
-  @Column({ default: 1000 })
+  // cents
+  @Column({ default: 1000 * 100 })
   priceLimitPerDay: number;
 
   @OneToMany(() => FoodEntry, (entity) => entity.user)

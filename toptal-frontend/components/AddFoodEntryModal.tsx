@@ -18,7 +18,7 @@ const schema = yup
   .object({
     menuName: yup.string().required(),
     calorie: yup.number().positive().integer().required(),
-    price: yup.number().positive().integer().required(),
+    price: yup.number().required(),
     takenAt: yup.date().required(),
   })
   .required();
@@ -54,7 +54,7 @@ export default function AddFoodEntryModal({
     if (editingFoodEntry) {
       setValue("menuName", editingFoodEntry.menuName);
       setValue("calorie", editingFoodEntry.calorie);
-      setValue("price", editingFoodEntry.price);
+      setValue("price", formatPrice(editingFoodEntry.price));
       setValue("takenAt", new Date(editingFoodEntry.takenAt));
     }
   }, [editingFoodEntry, setValue]);
@@ -65,9 +65,10 @@ export default function AddFoodEntryModal({
   };
 
   const onSubmit = async (data) => {
-    const { takenAt } = data;
+    const { price, takenAt } = data;
     const submitValues = {
       ...data,
+      price: Math.ceil(price * 100), //cents
       takenAt: takenAt.toISOString(),
     };
 
@@ -128,7 +129,7 @@ export default function AddFoodEntryModal({
               error={errors[field.name]}
               autoFocus
               type="number"
-              label="Price"
+              label="Price ($)"
               fullWidth
               variant="standard"
               {...field}
