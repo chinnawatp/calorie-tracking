@@ -149,7 +149,7 @@ export class FoodEntryService {
     );
 
     if (totalPriceCurrentMonth > user.priceLimitPerMonth) {
-      return `You have exceeded the monthly limit of $${user.calorieLimitPerDay}`;
+      return `You have exceeded the monthly limit of $${user.priceLimitPerMonth}`;
     }
 
     return '';
