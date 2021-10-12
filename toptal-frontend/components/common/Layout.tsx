@@ -25,7 +25,6 @@ import AdminList from "./AdminList";
 
 const drawerWidth = 240;
 
-
 type Props = { children: React.ReactNode };
 
 const Layout: React.FC<Props> = ({ children }) => {
@@ -35,9 +34,13 @@ const Layout: React.FC<Props> = ({ children }) => {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    APIClient.getCurrentUser().then((user: User) => {
-      setCurrentUser(user);
-    });
+    APIClient.getCurrentUser()
+      .then((user: User) => {
+        setCurrentUser(user);
+      })
+      .catch(() => {
+        console.log("Failed to get current user");
+      });
   }, []);
 
   const handleDrawerOpen = () => {
@@ -124,7 +127,6 @@ const Layout: React.FC<Props> = ({ children }) => {
     </Box>
   );
 };
-
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({

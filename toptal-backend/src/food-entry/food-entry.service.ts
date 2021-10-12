@@ -12,6 +12,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { DEFAULT_TIMEZONE } from 'src/utils/DateUtils';
 
 @Injectable()
 export class FoodEntryService {
@@ -20,6 +21,8 @@ export class FoodEntryService {
     private readonly foodEntryRepository: Repository<FoodEntry>,
     @InjectRepository(FoodEntryGroup)
     private readonly foodEntryGroupRepository: Repository<FoodEntryGroup>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly foodEntryGroupService: FoodEntryGroupService,
   ) {}
 
@@ -103,5 +106,52 @@ export class FoodEntryService {
     await this.foodEntryGroupService.updatePriceAndCalorie(
       foodEntry.foodEntryGroupId,
     );
+  }
+
+  async getCreteOrUpdateWarningMessage(userId: number) {
+    const user = await this.userRepository.findOneOrFail(userId);
+
+    const today = dayjs().tz(DEFAULT_TIMEZONE);
+
+    const { totalCalorieToday } = await this.foodEntryRepository
+      .createQueryBuilder('foodEntry')
+      .select('SUM(foodEntry.calorie)', 'totalCalorieToday')
+      .andWhere(
+        'foodEntry.createdAt >= :start AND foodEntry.createdAt <= :end',
+        {
+          start: today.startOf('day').toISOString(),
+          end: today.endOf('day').toISOString(),
+        },
+      )
+      .getRawOne();
+
+    console.log({ totalCalorieToday }, 'Total calorie for today');
+
+    if (totalCalorieToday >= user.calorieLimitPerDay) {
+      return `You have reached the daily limit of ${user.calorieLimitPerDay} calories`;
+    }
+
+    const { totalPriceCurrentMonth } = await this.foodEntryRepository
+      .createQueryBuilder('foodEntry')
+      .select('SUM(foodEntry.price)', 'totalPriceCurrentMonth')
+      .andWhere(
+        'foodEntry.createdAt >= :start AND foodEntry.createdAt <= :end',
+        {
+          start: today.startOf('month').toISOString(),
+          end: today.endOf('month').toISOString(),
+        },
+      )
+      .getRawOne();
+
+    console.log(
+      { totalPriceCurrentMonth },
+      'Total price for current month',
+    );
+
+    if (totalPriceCurrentMonth > user.priceLimitPerMonth) {
+      return `You have exceeded the monthly limit of $${user.calorieLimitPerDay}`;
+    }
+
+    return '';
   }
 }

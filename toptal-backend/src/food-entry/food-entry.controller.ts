@@ -12,6 +12,7 @@ import {
 import { FoodEntryService } from './food-entry.service';
 import { CreateFoodEntryDto } from './dto/create-food-entry.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateFoodEntryResponse } from './dto/create-food-entry.response';
 
 @Controller('food-entries')
 export class FoodEntryController {
@@ -19,9 +20,19 @@ export class FoodEntryController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Request() req, @Body() createFoodEntryDto: CreateFoodEntryDto) {
-    console.log({createFoodEntryDto});
-    return this.foodEntryService.create(req.user, createFoodEntryDto);
+  async create(@Request() req, @Body() createFoodEntryDto: CreateFoodEntryDto) {
+    const foodEntry = await this.foodEntryService.create(
+      req.user,
+      createFoodEntryDto,
+    );
+
+    const response = new CreateFoodEntryResponse();
+    Object.assign(response, foodEntry);
+    response.warningMessage =
+      await this.foodEntryService.getCreteOrUpdateWarningMessage(
+        foodEntry.userId,
+      );
+    return response;
   }
 
   @Get(':id')
@@ -30,11 +41,22 @@ export class FoodEntryController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateFoodEntryDto: CreateFoodEntryDto,
   ) {
-    return this.foodEntryService.update(+id, updateFoodEntryDto);
+    const foodEntry = await this.foodEntryService.update(
+      +id,
+      updateFoodEntryDto,
+    );
+
+    const response = new CreateFoodEntryResponse();
+    Object.assign(response, foodEntry);
+    response.warningMessage =
+      await this.foodEntryService.getCreteOrUpdateWarningMessage(
+        foodEntry.userId,
+      );
+    return response;
   }
 
   @Delete(':id')

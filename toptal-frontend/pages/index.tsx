@@ -182,9 +182,7 @@ export default function FoodEntries() {
               >
                 {`Total Calorie: ${foodEntryGroup.calorie}/${
                   user?.calorieLimitPerDay
-                } • Total Price: $${formatPrice(
-                  foodEntryGroup.price
-                )}/$${formatPrice(user?.priceLimitPerDay || 0)}`}
+                }`}
               </Typography>
               <WarningDailyLimit user={user} foodEntryGroup={foodEntryGroup} />
             </CardContent>

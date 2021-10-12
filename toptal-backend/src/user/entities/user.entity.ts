@@ -33,7 +33,7 @@ export class User {
 
   // cents
   @Column({ default: 1000 * 100 })
-  priceLimitPerDay: number;
+  priceLimitPerMonth: number;
 
   @OneToMany(() => FoodEntry, (entity) => entity.user)
   foodEntries: FoodEntry[];

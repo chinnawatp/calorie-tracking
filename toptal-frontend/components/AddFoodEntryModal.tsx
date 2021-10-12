@@ -74,13 +74,19 @@ export default function AddFoodEntryModal({
     };
 
     try {
+      let response
       if (editingFoodEntry) {
-        await fetchUpdate(editingFoodEntry.id, submitValues);  
+        response =await fetchUpdate(editingFoodEntry.id, submitValues);  
       } else {
-        await fetchCreate(submitValues);
+        response= await fetchCreate(submitValues);
+      }
+
+      if (response.warningMessage) {
+        toast.warn(response.warningMessage)
+      } else {
+        toast.success(editingFoodEntry ? "Updated food entry successfully" : "Created food entry successfully");
       }
       
-      toast.success(editingFoodEntry ? "Updated food entry successfully" : "Created food entry successfully");
       handleClose();
       onSuccess();
     } catch (error) {
