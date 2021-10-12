@@ -51,6 +51,8 @@ export default function AddFoodEntryModal({
     resolver: yupResolver(schema),
   });
 
+  const [loading, setLoading] = React.useState(false);
+
   React.useEffect(() => {
     if (editingFoodEntry) {
       setValue("menuName", editingFoodEntry.menuName);
@@ -74,6 +76,7 @@ export default function AddFoodEntryModal({
     };
 
     try {
+      setLoading(true);
       let response
       if (editingFoodEntry) {
         response =await fetchUpdate(editingFoodEntry.id, submitValues);  
@@ -91,6 +94,8 @@ export default function AddFoodEntryModal({
       onSuccess();
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -163,7 +168,7 @@ export default function AddFoodEntryModal({
       </StyledDialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSubmit(onSubmit)} variant="contained">
+        <Button onClick={handleSubmit(onSubmit)} disabled={loading} variant="contained">
           Submit
         </Button>
       </DialogActions>

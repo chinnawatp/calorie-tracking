@@ -143,10 +143,7 @@ export class FoodEntryService {
       )
       .getRawOne();
 
-    console.log(
-      { totalPriceCurrentMonth },
-      'Total price for current month',
-    );
+    console.log({ totalPriceCurrentMonth }, 'Total price for current month');
 
     if (totalPriceCurrentMonth > user.priceLimitPerMonth) {
       return `You have exceeded the monthly limit of $${user.priceLimitPerMonth}`;
