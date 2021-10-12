@@ -14,10 +14,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { CreateFoodEntryDto } from 'src/food-entry/dto/create-food-entry.dto';
-import { FoodEntry } from 'src/food-entry/entities/food-entry.entity';
-import { FoodEntryService } from 'src/food-entry/food-entry.service';
-import { DEFAULT_PAGINATION } from 'src/utils/PaginationUtils';
+import { CreateFoodEntryDto } from '../food-entry/dto/create-food-entry.dto';
+import { FoodEntry } from '../food-entry/entities/food-entry.entity';
+import { FoodEntryService } from '../food-entry/food-entry.service';
+import { DEFAULT_PAGINATION } from '../utils/PaginationUtils';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminGuard } from '../auth/roles.guard';
 import { AdminService } from './admin.service';

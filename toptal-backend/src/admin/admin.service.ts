@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { DEFAULT_TIMEZONE } from '../utils/DateUtils';
 import { Between, Repository } from 'typeorm';
 import { FoodEntry } from '../food-entry/entities/food-entry.entity';
@@ -28,6 +28,7 @@ export class AdminService {
         where: {
           createdAt: Between(
             today.subtract(7, 'days').startOf('day').toISOString(),
+            // include today
             today.toISOString(),
           ),
         },

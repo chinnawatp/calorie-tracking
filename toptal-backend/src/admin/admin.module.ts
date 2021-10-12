@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FoodEntryGroupModule } from 'src/food-entry-group/food-entry-group.module';
-import { FoodEntryModule } from 'src/food-entry/food-entry.module';
-import { User } from 'src/user/entities/user.entity';
+import { FoodEntryGroupModule } from '../food-entry-group/food-entry-group.module';
+import { FoodEntryModule } from '../food-entry/food-entry.module';
+import { User } from '../user/entities/user.entity';
 import { FoodEntryGroup } from '../food-entry-group/entities/food-entry-group.entity';
 import { FoodEntry } from '../food-entry/entities/food-entry.entity';
 import { AdminController } from './admin.controller';

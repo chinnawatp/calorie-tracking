@@ -1,20 +1,17 @@
 import { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
 import * as request from 'supertest';
 import { Connection } from 'typeorm';
-import { AppModule } from '../src/app.module';
 import { AuthService } from '../src/auth/auth.service';
 import { Role } from '../src/user/entities/role.entity';
 import { User } from '../src/user/entities/user.entity';
+import { createTestingModule } from './e2eUtils';
 
-describe('Report', () => {
+describe('Admin', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const moduleRef = await createTestingModule();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -44,7 +41,7 @@ describe('Report', () => {
     await connection.getRepository(User).save(normalUser);
   });
 
-  it(`/report/stat`, async () => {
+  it(`/admin/report`, async () => {
     const authService = app.get(AuthService);
     const res = await authService.login({
       email: 'admin@test.com',
@@ -52,12 +49,12 @@ describe('Report', () => {
     });
 
     await request(app.getHttpServer())
-      .get('/report/stat')
+      .get('/admin/report')
       .set('Authorization', `Bearer ${res.accessToken}`)
       .expect(200);
   });
 
-  it(`GET /report/stat should return 403 for normal user`, async () => {
+  it(`GET /admin/report should return 403 for normal user`, async () => {
     const authService = app.get(AuthService);
     const res = await authService.login({
       email: 'test@test.com',
@@ -65,7 +62,7 @@ describe('Report', () => {
     });
 
     await request(app.getHttpServer())
-      .get('/report/stat')
+      .get('/admin/report')
       .set('Authorization', `Bearer ${res.accessToken}`)
       .expect(403);
   });

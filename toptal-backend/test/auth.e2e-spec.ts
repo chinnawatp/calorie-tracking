@@ -1,20 +1,16 @@
 import { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
 import * as request from 'supertest';
 import { Connection } from 'typeorm';
-import { AppModule } from '../src/app.module';
 import { AuthService } from '../src/auth/auth.service';
 import { User } from '../src/user/entities/user.entity';
+import { createTestingModule } from './e2eUtils';
 
 describe('Auth', () => {
   let app: INestApplication;
-  let accessToken;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const moduleRef = await createTestingModule();
 
     app = moduleRef.createNestApplication();
     await app.init();

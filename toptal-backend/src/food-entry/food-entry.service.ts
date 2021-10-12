@@ -6,8 +6,7 @@ import { Between, Repository } from 'typeorm';
 import { CreateFoodEntryDto } from './dto/create-food-entry.dto';
 import { FoodEntry } from './entities/food-entry.entity';
 import { FoodEntryGroup } from '../food-entry-group/entities/food-entry-group.entity';
-import { DATE_FORMAT } from '../utils/DateUtils';
-import { FoodEntryGroupService } from 'src/food-entry-group/food-entry-group.service';
+import { FoodEntryGroupService } from '../food-entry-group/food-entry-group.service';
 import {
   IPaginationOptions,
   paginate,

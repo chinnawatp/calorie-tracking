@@ -1,17 +1,14 @@
-import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
-import { User } from '../src/user/entities/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { FoodEntry } from '../src/food-entry/entities/food-entry.entity';
-import { FoodEntryGroup } from '../src/food-entry-group/entities/food-entry-group.entity';
-import { Connection } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import * as request from 'supertest';
+import { Connection } from 'typeorm';
 import { AuthService } from '../src/auth/auth.service';
+import { FoodEntry } from '../src/food-entry/entities/food-entry.entity';
 import { FoodEntryService } from '../src/food-entry/food-entry.service';
+import { User } from '../src/user/entities/user.entity';
+import { createTestingModule } from './e2eUtils';
 
-describe('Auth', () => {
+describe('Food Entry', () => {
   let app: INestApplication;
 
   let accessToken: string;
@@ -30,18 +27,14 @@ describe('Auth', () => {
   };
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [
-        AppModule,
-      ],
-    }).compile();
+    const moduleRef = await createTestingModule();
 
     app = moduleRef.createNestApplication();
     await app.init();
 
     const connection = app.get(Connection);
     await connection.synchronize(true);
-    
+
     user.password = await bcrypt.hash(USER_PWD, 10);
     await connection.getRepository(User).save(user);
 
@@ -69,11 +62,8 @@ describe('Auth', () => {
     await request(app.getHttpServer())
       .put(`/food-entries/${result.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ menuName: 'Updated Name' })
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.menuName).toBe('Updated Name');
-      });
+      .send({ ...createDTO, menuName: 'Updated Name' })
+      .expect(200);
   });
 
   it(`DELETE /food-entries/1`, async () => {
@@ -84,13 +74,7 @@ describe('Auth', () => {
       .delete(`/food-entries/${result.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({ name: 'Dinner' })
-      .expect(200)
-      .expect(async () => {
-        const connection = app.get(Connection);
-        const count = await connection.getRepository(FoodEntry).count();
-
-        expect(count).toBe(0);
-      });
+      .expect(200);
   });
 
   afterAll(async () => {

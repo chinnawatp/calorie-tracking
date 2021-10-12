@@ -5,13 +5,13 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { FoodEntry } from 'src/food-entry/entities/food-entry.entity';
-import { Between, FindConditions, FindOneOptions, Repository } from 'typeorm';
+import { FoodEntry } from '../food-entry/entities/food-entry.entity';
+import { Between, FindConditions, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { FoodEntryGroup } from './entities/food-entry-group.entity';
 import { sumBy } from 'lodash';
 import * as dayjs from 'dayjs';
-import { DEFAULT_TIMEZONE } from 'src/utils/DateUtils';
+import { DEFAULT_TIMEZONE } from '../utils/DateUtils';
 
 @Injectable()
 export class FoodEntryGroupService {
