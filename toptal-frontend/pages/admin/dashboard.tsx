@@ -61,7 +61,7 @@ export default function ReportPage() {
           </Grid>
           <Grid item xs={6} md={6}>
             <Item>
-              <div>Last 7 days</div>
+              <div>Last 7 days (Includes today)</div>
               <Typography color="primary">{`${data?.numberOfFoodEntriesLastSevenDay} Food Entries`}</Typography>
             </Item>
           </Grid>
@@ -80,7 +80,7 @@ export default function ReportPage() {
           <Grid item xs={6} md={6}>
             <Item>
               <div>Last 7 days</div>
-              <Typography color="primary">{`${data?.averageCaloriePerUserLastSevenDay} Calorie`}</Typography>
+              <Typography color="primary">{`${data?.averageCaloriePerUserLastSevenDay} Calorie / User`}</Typography>
             </Item>
           </Grid>
         </Grid>

@@ -117,7 +117,7 @@ export default function AdminFoodEntriesPage() {
                   </TableCell>
                   <TableCell align="right">{row.calorie}</TableCell>
                   <TableCell align="right">{`$${formatPrice(row.price)}`}</TableCell>
-                  <TableCell align="right">{row.takenAt}</TableCell>
+                  <TableCell align="right">{new Date(row.takenAt).toLocaleString()}</TableCell>
                   <TableCell align="right">{row.user.firstName}</TableCell>
                   <TableCell align="right">
                     <Button

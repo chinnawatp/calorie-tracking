@@ -23,14 +23,17 @@ export class AdminService {
   async getStat() {
     const today = dayjs().tz(DEFAULT_TIMEZONE);
 
+    const lastSevenDayStart = today
+      .subtract(7, 'days')
+      .startOf('day')
+      .toISOString();
+    // include today
+    const lastSevenDayEnd = today.toISOString();
+
     const numberOfFoodEntriesLastSevenDay =
       await this.foodEntryRepository.count({
         where: {
-          createdAt: Between(
-            today.subtract(7, 'days').startOf('day').toISOString(),
-            // include today
-            today.toISOString(),
-          ),
+          createdAt: Between(lastSevenDayStart, lastSevenDayEnd),
         },
       });
     const numberOfFoodEntriesLastWeek = await this.foodEntryRepository.count({
@@ -42,9 +45,21 @@ export class AdminService {
         ),
       },
     });
+
     const numberOfUsers = await this.userRepository.count();
+    const { totalCalorieLastSevenDay } = await this.foodEntryRepository
+      .createQueryBuilder('foodEntry')
+      .select('SUM(foodEntry.calorie)', 'totalCalorieLastSevenDay')
+      .andWhere(
+        'foodEntry.createdAt >= :start AND foodEntry.createdAt <= :end',
+        {
+          start: lastSevenDayStart,
+          end: lastSevenDayEnd,
+        },
+      )
+      .getRawOne();
     const averageCaloriePerUserLastSevenDay = round(
-      numberOfFoodEntriesLastSevenDay / numberOfUsers,
+      totalCalorieLastSevenDay / numberOfUsers,
       2,
     );
 
