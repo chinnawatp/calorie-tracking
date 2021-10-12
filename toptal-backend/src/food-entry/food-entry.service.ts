@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
 import { User } from '../user/entities/user.entity';
@@ -43,6 +47,14 @@ export class FoodEntryService {
     return paginate<FoodEntry>(queryBuilder, options);
   }
 
+  findAll() {
+    return `This action returns all foodEntry`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} foodEntry`;
+  }
+
   async create(user: User, createFoodEntryDto: CreateFoodEntryDto) {
     const foodEntry = new FoodEntry();
     foodEntry.menuName = createFoodEntryDto.menuName;
@@ -75,14 +87,6 @@ export class FoodEntryService {
     await this.foodEntryGroupService.updatePriceAndCalorie(foodEntryGroup.id);
 
     return result;
-  }
-
-  findAll() {
-    return `This action returns all foodEntry`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} foodEntry`;
   }
 
   async update(id: number, updateFoodEntryDto: CreateFoodEntryDto) {
@@ -150,5 +154,13 @@ export class FoodEntryService {
     }
 
     return '';
+  }
+
+  async validateOwner(userId: number, foodEntryId) {
+    const foodEntry = await this.foodEntryRepository.findOneOrFail(foodEntryId);
+
+    if (foodEntry.userId !== userId) {
+      throw new ForbiddenException();
+    }
   }
 }

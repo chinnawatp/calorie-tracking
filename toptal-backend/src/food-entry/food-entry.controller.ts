@@ -40,11 +40,15 @@ export class FoodEntryController {
     return this.foodEntryService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Param('id') id: string,
+    @Request() request,
     @Body() updateFoodEntryDto: CreateFoodEntryDto,
   ) {
+    await this.foodEntryService.validateOwner(request.user.id, id);
+
     const foodEntry = await this.foodEntryService.update(
       +id,
       updateFoodEntryDto,
@@ -59,8 +63,11 @@ export class FoodEntryController {
     return response;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Request() request, @Param('id') id: string) {
+    await this.foodEntryService.validateOwner(request.user.id, id);
+
     return this.foodEntryService.remove(+id);
   }
 }
