@@ -12,7 +12,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { DEFAULT_TIMEZONE } from 'src/utils/DateUtils';
+import { DEFAULT_TIMEZONE } from '../utils/DateUtils';
 
 @Injectable()
 export class FoodEntryService {
