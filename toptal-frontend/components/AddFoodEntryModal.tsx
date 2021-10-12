@@ -13,6 +13,7 @@ import APIClient from "../utils/APIClient";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { FoodEntry } from "../utils/types";
+import { formatPrice } from "../utils/Formatter";
 
 const schema = yup
   .object({

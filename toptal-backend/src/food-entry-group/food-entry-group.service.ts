@@ -41,8 +41,8 @@ export class FoodEntryGroupService {
     };
     if (startDate && endDate) {
       where.takenAt = Between(
-        dayjs(startDate, DEFAULT_TIMEZONE),
-        dayjs(endDate, DEFAULT_TIMEZONE),
+        dayjs(startDate, DEFAULT_TIMEZONE).startOf('day'),
+        dayjs(endDate, DEFAULT_TIMEZONE).endOf('day'),
       );
     }
 

@@ -94,7 +94,7 @@ export default function AdminFoodEntriesPage() {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>id</TableCell>
+                <TableCell colSpan={1}>id</TableCell>
                 <TableCell>Menu Name</TableCell>
                 <TableCell align="right">Calories</TableCell>
                 <TableCell align="right">Price</TableCell>
@@ -109,10 +109,10 @@ export default function AdminFoodEntriesPage() {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell component="th" scope="row">
+                  <TableCell colSpan={1}>
                     {row.id}
                   </TableCell>
-                  <TableCell component="th" scope="row">
+                  <TableCell>
                     {row.menuName}
                   </TableCell>
                   <TableCell align="right">{row.calorie}</TableCell>

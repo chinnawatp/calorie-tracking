@@ -87,7 +87,7 @@ export default function FoodEntries() {
           setOpenAddFoodEntryModal(false);
         }}
         onSuccess={() => {
-          fetchData();
+          fetchData({ startDate, endDate });
         }}
       />
       <Container maxWidth="sm">

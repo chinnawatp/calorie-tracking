@@ -40,7 +40,7 @@ export default function ReportPage() {
     fetchData();
   }, []);
 
-  if (loading) {
+  if (loading || !data) {
     return <Layout>
       Loading...
     </Layout>
