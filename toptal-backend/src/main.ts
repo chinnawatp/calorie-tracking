@@ -5,6 +5,7 @@ import { seed } from './seed';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as DayJSUtc from 'dayjs/plugin/utc';
 import * as weekday from 'dayjs/plugin/weekday';
+import { ValidationPipe } from '@nestjs/common';
 
 dayjs.extend(DayJSUtc);
 dayjs.extend(timezone);
@@ -12,6 +13,11 @@ dayjs.extend(weekday);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 
   console.log({ ACTION: process.env.ACTION });
   if (process.env.ACTION === 'SEED') {

@@ -10,8 +10,9 @@ import * as dayjs from 'dayjs';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as DayJSUtc from 'dayjs/plugin/utc';
 import * as weekday from 'dayjs/plugin/weekday';
+import { ValidationPipe } from '@nestjs/common';
 
-export async function createTestingModule() {
+export async function createTestingApp() {
   dayjs.extend(DayJSUtc);
   dayjs.extend(timezone);
   dayjs.extend(weekday);
@@ -38,5 +39,15 @@ export async function createTestingModule() {
     ],
   }).compile();
 
-  return moduleRef;
+  const app = moduleRef.createNestApplication();
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
+
+  await app.init();
+
+
+  return app;
 }

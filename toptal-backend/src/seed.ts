@@ -14,22 +14,38 @@ export async function seed(app: INestApplication) {
   const connection = app.get(Connection);
   await connection.synchronize(true);
 
-  const user = await createUser(connection);
+  const admin = await createAdminUser(connection);
   const role = await createRole(connection);
-  await assignRole(connection, user, role);
+  await assignRole(connection, admin, role);
 
-  for (let index = 0; index < 100; index++) {
+  for (let index = 0; index < 50; index++) {
+    await createFoodEntry(app, connection, admin);
+  }
+
+  const user = await createUser(connection);
+  for (let index = 0; index < 50; index++) {
     await createFoodEntry(app, connection, user);
   }
 
   console.log('Seeding complete!');
 }
 
+async function createAdminUser(connection: Connection) {
+  const user = new User();
+  user.firstName = 'test';
+  user.lastName = 'test';
+  user.email = 'admin@test.com';
+  user.password = await bcrypt.hash('test1234', 10);
+
+  await connection.getRepository(User).save(user);
+  return user;
+}
+
 async function createUser(connection: Connection) {
   const user = new User();
   user.firstName = 'test';
   user.lastName = 'test';
-  user.email = 'test@test.com';
+  user.email = 'user@test.com';
   user.password = await bcrypt.hash('test1234', 10);
 
   await connection.getRepository(User).save(user);

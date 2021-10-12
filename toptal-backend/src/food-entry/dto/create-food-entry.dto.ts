@@ -1,6 +1,15 @@
+import { IsNotEmpty } from 'class-validator';
+
 export class CreateFoodEntryDto {
+  @IsNotEmpty()
   menuName: string;
-  price: number;
+
+  @IsNotEmpty()
   calorie: number;
+
+  @IsNotEmpty()
+  price: number;
+
+  @IsNotEmpty()
   takenAt: string;
 }

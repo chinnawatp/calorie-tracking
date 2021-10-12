@@ -23,7 +23,6 @@ import FoodEntryItem from "../components/FoodEntry";
 import APIClient from "../utils/APIClient";
 import { FoodEntryGroup, Pagination, User } from "../utils/types";
 import { CalendarToday } from "@mui/icons-material";
-import { Box } from "@mui/system";
 import { formatPrice } from "../utils/Formatter";
 import { format } from "date-fns";
 
@@ -42,7 +41,17 @@ export default function FoodEntries() {
     startDate,
     endDate,
     page,
-  }: { startDate: string | null; endDate: string | null; page?: number }) => {
+  }: {
+    startDate: string | null;
+    endDate: string | null;
+    page?: number;
+  }) => {
+    if (startDate && endDate) {
+      if (endDate < startDate) {
+        return toast.error("Entry end date should be after start date");
+      }
+    }
+
     try {
       setLoading(true);
       const data = await APIClient.getFoodEntryGroups({
@@ -62,13 +71,13 @@ export default function FoodEntries() {
   };
 
   useEffect(() => {
-    fetchData({startDate, endDate});
+    fetchData({ startDate, endDate });
   }, []);
 
-  const onDelete = async (id) => {
+  const onDelete = async (id: number) => {
     try {
       await APIClient.deleteFoodEntry(id);
-      fetchData();
+      fetchData({ startDate, endDate });
     } catch (error) {
       toast.error(error.message);
     }
@@ -78,11 +87,18 @@ export default function FoodEntries() {
     fetchData({ startDate, endDate });
   };
 
+  const onReset = () => {
+    setStartDate(null);
+    setEndDate(null);
+    fetchData({ startDate: null, endDate: null });
+  };
+
   return (
     <Layout>
       <AddFoodEntryModal
         open={openAddFoodEntryModal}
         fetchCreate={APIClient.createFoodEntry}
+        fetchUpdate={APIClient.createFoodEntry}
         onClose={() => {
           setOpenAddFoodEntryModal(false);
         }}
@@ -103,16 +119,18 @@ export default function FoodEntries() {
           style={{ margin: "16px 0", display: "flex", alignItems: "center" }}
         >
           <MobileDatePicker
-            label="Start Date"
+            label="Entry Start Date"
+            maxDate={endDate}
             value={startDate}
-            onChange={(newValue: Dayjs) => {
+            onChange={(newValue) => {
               console.log({ newValue });
               setStartDate(newValue);
             }}
             renderInput={(params) => <TextField {...params} />}
           />
           <MobileDatePicker
-            label="End Date"
+            label="Entry End Date"
+            minDate={startDate}
             value={endDate}
             onChange={(newValue) => {
               setEndDate(newValue);
@@ -127,6 +145,11 @@ export default function FoodEntries() {
           >
             Filter
           </Button>
+          <div>
+            <Button onClick={onReset} style={{ marginLeft: 16 }}>
+              Reset
+            </Button>
+          </div>
         </div>
         {loading && (
           <div>
@@ -153,7 +176,7 @@ export default function FoodEntries() {
               </Grid>
               <Typography
                 fontWeight="bold"
-                variant="h7"
+                variant="subtitle1"
                 color="text.secondary"
                 gutterBottom
               >

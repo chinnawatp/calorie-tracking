@@ -5,7 +5,7 @@ import { Connection } from 'typeorm';
 import { AuthService } from '../src/auth/auth.service';
 import { FoodEntryService } from '../src/food-entry/food-entry.service';
 import { User } from '../src/user/entities/user.entity';
-import { createTestingModule } from './e2eUtils';
+import { createTestingApp } from './e2eUtils';
 
 describe('Food Entry Group', () => {
   let app: INestApplication;
@@ -26,10 +26,7 @@ describe('Food Entry Group', () => {
   };
 
   beforeAll(async () => {
-    const moduleRef = await createTestingModule();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
+    app = await createTestingApp();
 
     const connection = app.get(Connection);
     await connection.synchronize(true);
@@ -53,7 +50,11 @@ describe('Food Entry Group', () => {
     await request(app.getHttpServer())
       .get('/food-entry-groups')
       .set('Authorization', `Bearer ${accessToken}`)
-      .expect(200);
+      .expect(200)
+      .expect((res) => {
+        const items = res.body.items;
+        expect(items[0].foodEntries).not.toBeNull();
+      });
   });
 
   afterAll(async () => {

@@ -5,16 +5,13 @@ import { Connection } from 'typeorm';
 import { AuthService } from '../src/auth/auth.service';
 import { Role } from '../src/user/entities/role.entity';
 import { User } from '../src/user/entities/user.entity';
-import { createTestingModule } from './e2eUtils';
+import { createTestingApp } from './e2eUtils';
 
 describe('Admin', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await createTestingModule();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
+    app = await createTestingApp();
 
     const connection = app.get(Connection);
     await connection.synchronize(true);

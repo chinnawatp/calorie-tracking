@@ -39,9 +39,9 @@ export default class APIClient {
     endDate,
     page,
   }: {
-    startDate?: string;
-    endDate?: string;
-    page?: string;
+    startDate: string | null;
+    endDate: string | null;
+    page?: number;
   }) {
     let params = {
       page,

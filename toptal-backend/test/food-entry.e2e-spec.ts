@@ -3,10 +3,9 @@ import * as bcrypt from 'bcrypt';
 import * as request from 'supertest';
 import { Connection } from 'typeorm';
 import { AuthService } from '../src/auth/auth.service';
-import { FoodEntry } from '../src/food-entry/entities/food-entry.entity';
 import { FoodEntryService } from '../src/food-entry/food-entry.service';
 import { User } from '../src/user/entities/user.entity';
-import { createTestingModule } from './e2eUtils';
+import { createTestingApp } from './e2eUtils';
 
 describe('Food Entry', () => {
   let app: INestApplication;
@@ -20,17 +19,14 @@ describe('Food Entry', () => {
   const USER_PWD = 'test1234';
 
   const createDTO = {
-    menuName: 'Steak',
+    menuName: 'Burger',
     price: 1,
     calorie: 2,
     takenAt: new Date().toISOString(),
   };
 
   beforeAll(async () => {
-    const moduleRef = await createTestingModule();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
+    app = await createTestingApp();
 
     const connection = app.get(Connection);
     await connection.synchronize(true);

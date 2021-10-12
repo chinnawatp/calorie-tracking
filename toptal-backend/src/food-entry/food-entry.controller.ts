@@ -3,13 +3,11 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Request,
   Put,
-  HttpCode,
 } from '@nestjs/common';
 import { FoodEntryService } from './food-entry.service';
 import { CreateFoodEntryDto } from './dto/create-food-entry.dto';
@@ -22,12 +20,8 @@ export class FoodEntryController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Request() req, @Body() createFoodEntryDto: CreateFoodEntryDto) {
+    console.log({createFoodEntryDto});
     return this.foodEntryService.create(req.user, createFoodEntryDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.foodEntryService.findAll();
   }
 
   @Get(':id')

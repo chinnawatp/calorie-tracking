@@ -7,7 +7,17 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-export default function DeleteConfirmationDialog({ open, onClose, onDelete }) {
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  onDelete: () => void;
+};
+
+export default function DeleteConfirmationDialog({
+  open,
+  onClose,
+  onDelete,
+}: Props) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Are you sure you want to delete this?</DialogTitle>
