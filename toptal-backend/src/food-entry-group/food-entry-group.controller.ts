@@ -29,7 +29,7 @@ export class FoodEntryGroupController {
     )
     limit = DEFAULT_PAGINATION.LIMIT,
     @Query('startDate') startDate,
-    @Query('endDate')       endDate,
+    @Query('endDate') endDate,
   ): Promise<Pagination<FoodEntryGroup>> {
     limit =
       limit > DEFAULT_PAGINATION.MAX_LIMIT

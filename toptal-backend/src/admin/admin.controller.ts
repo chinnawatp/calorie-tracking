@@ -6,7 +6,6 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Put,
   Query,
@@ -29,11 +28,6 @@ export class AdminController {
     private readonly adminService: AdminService,
     private readonly foodEntryService: FoodEntryService,
   ) {}
-
-  @Get()
-  findAll() {
-    return this.adminService.findAll();
-  }
 
   @Get('/report')
   getStat() {

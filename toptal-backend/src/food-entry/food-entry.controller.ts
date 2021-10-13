@@ -35,11 +35,6 @@ export class FoodEntryController {
     return response;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.foodEntryService.findOne(+id);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
