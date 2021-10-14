@@ -19,11 +19,11 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import AddFoodEntryModal from "../components/AddFoodEntryModal";
 import Layout from "../components/common/Layout";
-import FoodEntryItem from "../components/FoodEntry";
+import FoodEntryItem from "../components/FoodEntryItem";
+import FoodEntryGroupItem from "../components/FoodEntryGroupItem";
 import APIClient from "../utils/APIClient";
 import { FoodEntryGroup, Pagination, User } from "../utils/types";
 import { CalendarToday } from "@mui/icons-material";
-import { formatPrice } from "../utils/Formatter";
 import { format } from "date-fns";
 
 export default function FoodEntries() {
@@ -163,44 +163,12 @@ export default function FoodEntries() {
           </div>
         )}
         {foodEntryGroupPagination?.items.map((foodEntryGroup) => (
-          <Paper
-            style={{ padding: 8, marginBottom: 16 }}
+          <FoodEntryGroupItem
+            foodEntryGroup={foodEntryGroup}
+            onDelete={onDelete}
+            user={user}
             key={foodEntryGroup.id}
-          >
-            <CardContent>
-              <Grid style={{ display: "flex", alignItems: "center" }}>
-                <CalendarToday color="primary" style={{ marginRight: 8 }} />
-                <Typography fontWeight="bold" variant="h5" color="primary">
-                  {format(new Date(foodEntryGroup.takenAt), "yyyy-MM-dd")}
-                </Typography>
-              </Grid>
-              <Typography
-                fontWeight="bold"
-                variant="subtitle1"
-                color="text.secondary"
-                gutterBottom
-              >
-                {`Total Calorie: ${foodEntryGroup.calorie}/${
-                  user?.calorieLimitPerDay
-                }`}
-              </Typography>
-              <WarningDailyLimit user={user} foodEntryGroup={foodEntryGroup} />
-            </CardContent>
-            <Divider />
-            <Stack spacing={2}>
-              {foodEntryGroup.foodEntries.map((foodEntry, index) => (
-                <div key={foodEntry.id}>
-                  <FoodEntryItem
-                    foodEntry={foodEntry}
-                    onDelete={() => onDelete(foodEntry.id)}
-                  />
-                  {index !== foodEntryGroup.foodEntries.length - 1 && (
-                    <Divider />
-                  )}
-                </div>
-              ))}
-            </Stack>
-          </Paper>
+          />
         ))}
         {foodEntryGroupPagination?.meta && (
           <MuiPagination

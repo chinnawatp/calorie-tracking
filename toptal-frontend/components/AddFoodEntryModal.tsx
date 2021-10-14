@@ -26,7 +26,7 @@ const schema = yup
 
 type Props = {
   open: boolean;
-  editingFoodEntry?: FoodEntry;
+  editingFoodEntry?: FoodEntry | null;
   fetchCreate: (value: any) => Promise<any>;
   fetchUpdate: (id: number, value: any) => Promise<any>;
   onClose: () => void;

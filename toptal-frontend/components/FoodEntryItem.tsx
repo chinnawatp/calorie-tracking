@@ -1,13 +1,10 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Button,
-  CardActions,
-  CardContent, Typography
-} from "@mui/material";
+import { Button, CardActions, CardContent, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import React from "react";
+import React, { useState } from "react";
 import { formatPrice } from "../utils/Formatter";
 import { FoodEntry } from "../utils/types";
+import DeleteConfirmationDialog from "./common/DeleteConfirmationDiaglog";
 
 type Props = {
   foodEntry: FoodEntry;
@@ -15,6 +12,8 @@ type Props = {
 };
 
 export default function FoodEntryItem({ foodEntry, onDelete }: Props) {
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
   return (
     <CardContent style={{ position: "relative" }}>
       <Typography align="left" variant="h6" color="primary">
@@ -35,10 +34,21 @@ export default function FoodEntryItem({ foodEntry, onDelete }: Props) {
         {new Date(foodEntry.takenAt).toLocaleString()}
       </Typography>
       <CardActions disableSpacing>
-        <Button onClick={onDelete} color="error" startIcon={<DeleteIcon />}>
+        <Button
+          onClick={() => setOpenDeleteDialog(true)}
+          color="error"
+          startIcon={<DeleteIcon />}
+        >
           Delete
         </Button>
       </CardActions>
+      <DeleteConfirmationDialog
+        onDelete={onDelete}
+        open={openDeleteDialog}
+        onClose={() => {
+          setOpenDeleteDialog(false);
+        }}
+      />
     </CardContent>
   );
 }

@@ -30,10 +30,10 @@ export default function AdminFoodEntriesPage() {
   const [pagination, setPagination] = useState<Pagination<FoodEntry>>();
   const [openAddFoodEntryModal, setOpenAddFoodEntryModal] =
     React.useState(false);
-  const [editingFoodEntry, setEditingFoodEntry] = useState();
-  const [deletingFoodEntry, setDeletingFoodEntry] = useState();
+  const [editingFoodEntry, setEditingFoodEntry] = useState<FoodEntry | null>(null);
+  const [deletingFoodEntry, setDeletingFoodEntry] = useState<FoodEntry | null>(null);
 
-  const fetchData = async ({ page } = {}) => {
+  const fetchData = async ({ page }: { page: number | undefined }) => {
     try {
       const data = await APIClient.getAdminFoodEntries({ page });
       setPagination(data);
@@ -43,13 +43,17 @@ export default function AdminFoodEntriesPage() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData({ page: 1 });
   }, []);
 
   const onDelete = async () => {
+    if (!deletingFoodEntry) {
+      return;
+    }
+
     try {
       await APIClient.adminRemoveFoodEntry(deletingFoodEntry.id);
-      fetchData();
+      fetchData({ page: pagination?.meta.currentPage });
     } catch (e) {
       toast.error(e.message);
     }
@@ -68,7 +72,7 @@ export default function AdminFoodEntriesPage() {
           fetchCreate={APIClient.adminCreateFoodEntry}
           fetchUpdate={APIClient.adminUpdateFoodEntry}
           onSuccess={() => {
-            fetchData();
+            fetchData({ page: pagination?.meta.currentPage });
           }}
           onClose={() => {
             setEditingFoodEntry(null);
@@ -77,7 +81,7 @@ export default function AdminFoodEntriesPage() {
         />
         <DeleteConfirmationDialog
           onDelete={onDelete}
-          open={deletingFoodEntry}
+          open={deletingFoodEntry ? true : false}
           onClose={() => {
             setDeletingFoodEntry(null);
           }}
@@ -109,15 +113,15 @@ export default function AdminFoodEntriesPage() {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell colSpan={1}>
-                    {row.id}
-                  </TableCell>
-                  <TableCell>
-                    {row.menuName}
-                  </TableCell>
+                  <TableCell colSpan={1}>{row.id}</TableCell>
+                  <TableCell>{row.menuName}</TableCell>
                   <TableCell align="right">{row.calorie}</TableCell>
-                  <TableCell align="right">{`$${formatPrice(row.price)}`}</TableCell>
-                  <TableCell align="right">{new Date(row.takenAt).toLocaleString()}</TableCell>
+                  <TableCell align="right">{`$${formatPrice(
+                    row.price
+                  )}`}</TableCell>
+                  <TableCell align="right">
+                    {new Date(row.takenAt).toLocaleString()}
+                  </TableCell>
                   <TableCell align="right">{row.user.firstName}</TableCell>
                   <TableCell align="right">
                     <Button
@@ -143,18 +147,18 @@ export default function AdminFoodEntriesPage() {
               ))}
             </TableBody>
             <TableFooter>
-            <TableRow style={{height: 50}}>
-              <TableCell>
-              {pagination?.meta && (
-                <MuiPagination
-                  count={pagination?.meta.totalPages}
-                  page={pagination?.meta.currentPage}
-                  onChange={(_, page) => {
-                    fetchData({ page });
-                  }}
-                />
-              )}
-              </TableCell>
+              <TableRow style={{ height: 50 }}>
+                <TableCell>
+                  {pagination?.meta && (
+                    <MuiPagination
+                      count={pagination?.meta.totalPages}
+                      page={pagination?.meta.currentPage}
+                      onChange={(_, page) => {
+                        fetchData({ page });
+                      }}
+                    />
+                  )}
+                </TableCell>
               </TableRow>
             </TableFooter>
           </Table>

@@ -43,14 +43,16 @@ export default class APIClient {
     endDate: string | null;
     page?: number;
   }) {
-    let params = {
+    let params: {
+      page?: number;
+      startDate?: string;
+      endDate?: string;
+    } = {
       page,
     };
     if (startDate && endDate) {
-      params = {
-        startDate: format(startDate, "yyyy-MM-dd"),
-        endDate: format(endDate, "yyyy-MM-dd"),
-      };
+      params.startDate = format(new Date(startDate), "yyyy-MM-dd");
+      params.endDate = format(new Date(endDate), "yyyy-MM-dd");
     }
 
     const res = await fetchAxios({
@@ -108,7 +110,7 @@ export default class APIClient {
     return res;
   }
 
-  static async getAdminFoodEntries({ page } = {}) {
+  static async getAdminFoodEntries({ page }: { page?: number } = {}) {
     const res = await fetchAxios({
       method: "get",
       url: `/admin/food-entries`,

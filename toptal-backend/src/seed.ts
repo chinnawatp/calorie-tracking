@@ -23,7 +23,7 @@ export async function seed(app: INestApplication) {
   }
 
   const user = await createUser(connection);
-  for (let index = 0; index < 50; index++) {
+  for (let index = 0; index < 10; index++) {
     await createFoodEntry(app, connection, user);
   }
 
@@ -32,8 +32,8 @@ export async function seed(app: INestApplication) {
 
 async function createAdminUser(connection: Connection) {
   const user = new User();
-  user.firstName = 'test';
-  user.lastName = 'test';
+  user.firstName = 'Mr. Admin';
+  user.lastName = 'Super';
   user.email = 'admin@test.com';
   user.password = await bcrypt.hash('test1234', 10);
 
@@ -43,8 +43,8 @@ async function createAdminUser(connection: Connection) {
 
 async function createUser(connection: Connection) {
   const user = new User();
-  user.firstName = 'test';
-  user.lastName = 'test';
+  user.firstName = 'Mr. Normal';
+  user.lastName = 'User';
   user.email = 'user@test.com';
   user.password = await bcrypt.hash('test1234', 10);
 
