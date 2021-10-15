@@ -58,10 +58,10 @@ export class AdminService {
         },
       )
       .getRawOne();
-    const averageCaloriePerUserLastSevenDay = round(
-      totalCalorieLastSevenDay / numberOfUsers,
-      2,
-    );
+    const averageCaloriePerUserLastSevenDay =
+      totalCalorieLastSevenDay > 0 && numberOfUsers > 0
+        ? round(totalCalorieLastSevenDay / numberOfUsers, 2)
+        : 0;
 
     return {
       numberOfFoodEntriesLastSevenDay,
