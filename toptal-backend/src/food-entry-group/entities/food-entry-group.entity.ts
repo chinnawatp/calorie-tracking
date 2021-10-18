@@ -27,6 +27,9 @@ export class FoodEntryGroup {
   })
   foodEntries: FoodEntry[];
 
+  @Column()
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.foodEntryGroups)
   user: User;
 }

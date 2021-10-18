@@ -29,9 +29,7 @@ export class FoodEntryController {
     const response = new CreateFoodEntryResponse();
     Object.assign(response, foodEntry);
     response.warningMessage =
-      await this.foodEntryService.getCreteOrUpdateWarningMessage(
-        foodEntry.userId,
-      );
+      await this.foodEntryService.getCreteOrUpdateWarningMessage(foodEntry);
     return response;
   }
 
@@ -52,9 +50,7 @@ export class FoodEntryController {
     const response = new CreateFoodEntryResponse();
     Object.assign(response, foodEntry);
     response.warningMessage =
-      await this.foodEntryService.getCreteOrUpdateWarningMessage(
-        foodEntry.userId,
-      );
+      await this.foodEntryService.getCreteOrUpdateWarningMessage(foodEntry);
     return response;
   }
 

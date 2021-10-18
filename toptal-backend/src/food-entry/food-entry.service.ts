@@ -65,6 +65,7 @@ export class FoodEntryService {
 
     let foodEntryGroup = await this.foodEntryGroupRepository.findOne({
       where: {
+        userId: user.id,
         takenAt: Between(
           dayjs(foodEntry.takenAt).startOf('day'),
           dayjs(foodEntry.takenAt).endOf('day'),
@@ -99,6 +100,10 @@ export class FoodEntryService {
 
     await this.foodEntryRepository.save(foodEntry);
 
+    await this.foodEntryGroupService.updatePriceAndCalorie(
+      foodEntry.foodEntryGroupId,
+    );
+
     return foodEntry;
   }
 
@@ -112,21 +117,19 @@ export class FoodEntryService {
     );
   }
 
-  async getCreteOrUpdateWarningMessage(userId: number) {
-    const user = await this.userRepository.findOneOrFail(userId);
+  async getCreteOrUpdateWarningMessage(foodEntry: FoodEntry) {
+    const user = await this.userRepository.findOneOrFail(foodEntry.userId);
 
-    const today = dayjs().tz(DEFAULT_TIMEZONE);
+    const takenAt = dayjs(foodEntry.takenAt).tz(DEFAULT_TIMEZONE);
 
     const { totalCalorieToday } = await this.foodEntryRepository
       .createQueryBuilder('foodEntry')
       .select('SUM(foodEntry.calorie)', 'totalCalorieToday')
-      .andWhere(
-        'foodEntry.createdAt >= :start AND foodEntry.createdAt <= :end',
-        {
-          start: today.startOf('day').toISOString(),
-          end: today.endOf('day').toISOString(),
-        },
-      )
+      .andWhere('foodEntry.userId = :userId', { userId: user.id })
+      .andWhere('foodEntry.takenAt >= :start AND foodEntry.takenAt <= :end', {
+        start: takenAt.startOf('day').toISOString(),
+        end: takenAt.endOf('day').toISOString(),
+      })
       .getRawOne();
 
     console.log({ totalCalorieToday }, 'Total calorie for today');
@@ -138,19 +141,19 @@ export class FoodEntryService {
     const { totalPriceCurrentMonth } = await this.foodEntryRepository
       .createQueryBuilder('foodEntry')
       .select('SUM(foodEntry.price)', 'totalPriceCurrentMonth')
-      .andWhere(
-        'foodEntry.createdAt >= :start AND foodEntry.createdAt <= :end',
-        {
-          start: today.startOf('month').toISOString(),
-          end: today.endOf('month').toISOString(),
-        },
-      )
+      .andWhere('foodEntry.userId = :userId', { userId: user.id })
+      .andWhere('foodEntry.takenAt >= :start AND foodEntry.takenAt <= :end', {
+        start: takenAt.startOf('month').toISOString(),
+        end: takenAt.endOf('month').toISOString(),
+      })
       .getRawOne();
 
     console.log({ totalPriceCurrentMonth }, 'Total price for current month');
 
     if (totalPriceCurrentMonth > user.priceLimitPerMonth) {
-      return `You have exceeded the monthly limit of $${user.priceLimitPerMonth}`;
+      return `You have exceeded the monthly limit of $${(
+        user.priceLimitPerMonth / 100
+      ).toFixed(2)}`;
     }
 
     return '';
