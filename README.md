@@ -11,6 +11,13 @@
 * User authentication/authorization
 * For each food entry, allow the user to enter the price and warn if the monthly limit is exceeded
 
+![Screen Shot 2564-11-24 at 09 14 02](https://user-images.githubusercontent.com/9657800/143159190-37662914-081f-4936-9df9-140eb22ba829.png)
+
+![Screen Shot 2564-11-24 at 09 14 11](https://user-images.githubusercontent.com/9657800/143159198-96784fd3-fe3f-4008-b7b3-b415605456a3.png)
+
+![Screen Shot 2564-11-24 at 09 14 25](https://user-images.githubusercontent.com/9657800/143159211-d65141da-b9a4-4988-860d-6da0fb964ecc.png)
+
+
 ## Getting Started
 Prerequisite
 - Docker
