@@ -26,7 +26,7 @@ export async function createTestingApp() {
         port: parseInt(process.env.DATABASE_PORT, 10),
         username: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,
-        database: 'toptal_e2e',
+        database: 'dev_e2e',
         entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
         synchronize: false,
         logging: false,
